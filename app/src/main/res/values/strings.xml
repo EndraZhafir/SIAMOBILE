@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">SIAMOBILE</string>
+    <string name="login_text">Login</string>
+
+    <string name="email">Email</string>
+    <string name="email_hint">Masukkan email Anda</string>
+
+    <string name="password">Password</string>
+    <string name="password_hint">Masukkan password email Anda</string>
+
+    <string name="login_button">Masuk</string>
+    <string name="selamat_datang">Hai, senang melihat Anda! Isi data Anda untuk masuk ke dashboard Admin.</string>
+</resources>
