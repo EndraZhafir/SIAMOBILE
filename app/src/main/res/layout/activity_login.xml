@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/loginpage"
     android:layout_width="match_parent"
@@ -45,6 +46,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
                 android:text="@string/login_text"
+                android:fontFamily="@font/urbanistbold"
                 android:textColor="@color/ugn_green"
                 android:textSize="24sp"
                 android:textStyle="bold" />
@@ -54,6 +56,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
                 android:text="@string/selamat_datang"
+                android:fontFamily="@font/urbanistregular"
                 android:textColor="@color/black"
                 android:textSize="12sp" />
 
@@ -62,6 +65,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
                 android:text="@string/email"
+                android:fontFamily="@font/urbanistsemibold"
                 android:textColor="@color/ugn_green"
                 android:textSize="16sp" />
 
@@ -69,13 +73,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
-                android:hint="@string/email_hint">
+                android:hint="@string/email_hint"
+                app:startIconDrawable="@drawable/mail_icon"
+                style="@style/CustomTextInputLayoutOutline">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/email"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textEmailAddress" />
+                    android:inputType="textEmailAddress"
+                    android:fontFamily="@font/urbanistmedium" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <TextView
@@ -83,6 +90,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
                 android:text="@string/password"
+                android:fontFamily="@font/urbanistsemibold"
                 android:textColor="@color/ugn_green"
                 android:textSize="16sp" />
 
@@ -91,20 +99,25 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
                 android:hint="@string/password_hint"
-                app:endIconMode="password_toggle">
+                app:startIconDrawable="@drawable/lock_icon"
+                app:endIconMode="password_toggle"
+                style="@style/CustomTextInputLayoutOutline">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/et_password"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textPassword" />
+                    android:inputType="textPassword"
+                    android:fontFamily="@font/urbanistmedium"/>
             </com.google.android.material.textfield.TextInputLayout>
 
             <Button
                 android:id="@+id/btn_login"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/login_button" />
+                android:text="@string/login_button"
+                android:fontFamily="@font/urbanistsemibold"
+                android:background="@drawable/rounded_button"/>
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 

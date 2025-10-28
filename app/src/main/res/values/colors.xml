@@ -5,7 +5,10 @@
 
     <!-- Warna yang digunakan untuk SIAMOBILE -->
     <color name="ugn_green">#015023</color>
+
     <color name="ugn_gold">#DABC4E</color>
+    <color name="ugn_gold_dark">#B1983C</color>
+
     <color name="background_cream">#FBF8ED</color>
 
 </resources>
