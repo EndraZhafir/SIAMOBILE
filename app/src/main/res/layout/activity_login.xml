@@ -70,11 +70,12 @@
                 android:textSize="16sp" />
 
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/logintextinputlayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
                 android:hint="@string/email_hint"
-                app:startIconDrawable="@drawable/mail_icon"
+                app:startIconDrawable="@drawable/icon_mail"
                 style="@style/CustomTextInputLayoutOutline">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -95,11 +96,12 @@
                 android:textSize="16sp" />
 
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/passwordtextinputlayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
                 android:hint="@string/password_hint"
-                app:startIconDrawable="@drawable/lock_icon"
+                app:startIconDrawable="@drawable/icon_lock"
                 app:endIconMode="password_toggle"
                 style="@style/CustomTextInputLayoutOutline">
 
@@ -111,13 +113,13 @@
                     android:fontFamily="@font/urbanistmedium"/>
             </com.google.android.material.textfield.TextInputLayout>
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_login"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/login_button"
                 android:fontFamily="@font/urbanistsemibold"
-                android:background="@drawable/rounded_button"/>
+                android:background="@drawable/rounded_button_gold"/>
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
