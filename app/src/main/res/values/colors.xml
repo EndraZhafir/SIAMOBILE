@@ -10,6 +10,8 @@
     <color name="ugn_gold">#DABC4E</color>
     <color name="ugn_gold_dark">#B1983C</color>
 
+    <color name="ugn_gray">#606060</color>
+
     <color name="background_cream">#FBF8ED</color>
 
 </resources>

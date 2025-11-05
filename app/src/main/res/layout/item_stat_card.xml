@@ -17,7 +17,7 @@
         <ImageView
             android:layout_width="75dp"
             android:layout_height="75dp"
-            android:src="@drawable/icon_subject_gold"
+            android:src="@drawable/ic_subject_gold"
             android:layout_gravity="center"/>
 
         <TextView

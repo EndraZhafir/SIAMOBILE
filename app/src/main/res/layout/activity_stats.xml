@@ -57,7 +57,7 @@
             android:id="@+id/icon_ugn"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:src="@drawable/icon_color"/>
+            android:src="@drawable/ic_color"/>
 
     </LinearLayout>
 
@@ -133,7 +133,7 @@
                     <ImageView
                         android:layout_width="32dp"
                         android:layout_height="32dp"
-                        android:src="@drawable/icon_subject_goldbg" />
+                        android:src="@drawable/ic_subject_goldbg" />
 
                 </LinearLayout>
 
@@ -175,7 +175,7 @@
             android:hint="Cari Matkul"
             android:textColorHint="@color/ugn_gold"
             app:endIconMode="custom"
-            app:endIconDrawable="@drawable/icon_search"
+            app:endIconDrawable="@drawable/ic_search"
             app:endIconTint="@color/ugn_gold"
             android:layout_marginBottom="20dp"
             style="@style/CustomTextInputLayoutOutline">

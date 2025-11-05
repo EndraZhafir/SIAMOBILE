@@ -1,42 +1,24 @@
 package com.endrazhafir.siamobile
 
+import LoginScreen
 import android.os.Bundle
 import android.widget.Toast
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
-import com.endrazhafir.siamobile.databinding.ActivityLoginBinding
+import androidx.compose.material3.MaterialTheme
 
-class LoginActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityLoginBinding
-
+class LoginActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityLoginBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-
-        setupUI()
-    }
-
-    private fun setupUI() {
-        binding.btnLogin.setOnClickListener {
-            handleLogin()
+        setContent {
+            MaterialTheme {
+                LoginScreen(
+                    onLoginClick = { email, password ->
+                        // Handle login logic nanti
+                    }
+                )
+            }
         }
-    }
-
-    private fun handleLogin() {
-        val email = binding.email.text.toString().trim()
-        val password = binding.etPassword.text.toString().trim()
-
-        if (email.isEmpty()) {
-            binding.email.error = "Email tidak boleh kosong"
-            return
-        }
-
-        if (password.isEmpty()) {
-            binding.etPassword.error = "Password tidak boleh kosong"
-            return
-        }
-
-        // TODO: Implement actual login
-        Toast.makeText(this, "Login berhasil!", Toast.LENGTH_SHORT).show()
     }
 }
