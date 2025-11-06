@@ -24,21 +24,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.endrazhafir.siamobile.data.MataKuliah
-import com.endrazhafir.siamobile.ui.theme.Black
+import com.endrazhafir.siamobile.ui.theme.*
 import com.endrazhafir.siamobile.ui.theme.SiaMobileTheme
-
-// Warna custom
-val UGNGreen = Color(0xFF015023)
-val UGNGreenDark = Color(0xFF014820)
-val UGNGold = Color(0xFFDABC4E)
-val UGNLightGold = Color(0xFFF4EAC8)
-val BackgroundCream = Color(0xFFFBF8ED)
-
-// FontFamily custom
-val UrbanistBold = FontFamily(Font(R.font.urbanistbold, FontWeight.Bold))
-val UrbanistSemiBold = FontFamily(Font(R.font.urbanistsemibold, FontWeight.SemiBold))
-val UrbanistMedium = FontFamily(Font(R.font.urbanistmedium, FontWeight.Medium))
-
 class StatsActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -125,8 +112,8 @@ fun StatsScreen(
                     Text(
                         text = "Statistik Mata Kuliah",
                         color = UGNGreen,
-                        fontFamily = UrbanistBold,
-                        fontSize = 24.sp,
+                        style = MaterialTheme.typography.displayLarge,
+                        fontSize = 20.sp,
                         modifier = Modifier.weight(1f)
                     )
 
@@ -141,8 +128,7 @@ fun StatsScreen(
                     ) {
                         Text(
                             text = "Tambah",
-                            fontFamily = UrbanistSemiBold,
-                            fontSize = 12.sp
+                            style = MaterialTheme.typography.bodySmall
                         )
                     }
                 }
@@ -228,15 +214,14 @@ fun TopBar(onBackClick: () -> Unit) {
         ) {
             Text(
                 text = "Universitas Global Nusantara",
-                fontFamily = UrbanistSemiBold,
+                style = MaterialTheme.typography.bodySmall,
                 color = UGNGold,
-                fontSize = 12.sp
+                fontWeight = FontWeight.SemiBold
             )
             Text(
                 text = "Dashboard Admin",
-                fontFamily = UrbanistSemiBold,
-                color = Color.White,
-                fontSize = 12.sp,
+                style = MaterialTheme.typography.bodySmall,
+                color = White,
                 fontWeight = FontWeight.Bold
             )
         }
@@ -273,8 +258,8 @@ fun StatsCard(totalActive: Int) {
                 Text(
                     text = "Total Mata Kuliah",
                     color = Color.White,
-                    fontFamily = UrbanistBold,
-                    fontSize = 24.sp,
+                    style = MaterialTheme.typography.displayLarge,
+                    fontSize = 20.sp,
                     modifier = Modifier.weight(1f)
                 )
 
@@ -290,15 +275,15 @@ fun StatsCard(totalActive: Int) {
             ) {
                 Text(
                     text = totalActive.toString(),
-                    fontFamily = UrbanistBold,
-                    color = Color.White,
-                    fontSize = 24.sp
+                    style = MaterialTheme.typography.displayLarge,
+                    fontSize = 30.sp,
+                    color = Color.White
                 )
                 Text(
                     text = "Mata kuliah aktif",
-                    fontFamily = UrbanistSemiBold,
-                    color = Color.White,
-                    fontSize = 14.sp
+                    style = MaterialTheme.typography.bodySmall,
+                    fontSize = 16.sp,
+                    color = Color.White
                 )
             }
         }
@@ -318,7 +303,8 @@ fun SearchField(
         placeholder = {
             Text(
                 "Cari Matkul",
-                fontFamily = UrbanistMedium,
+                style = MaterialTheme.typography.bodyLarge,
+                fontSize = 16.sp,
                 color = UGNGold
             )
         },
@@ -337,10 +323,8 @@ fun SearchField(
             unfocusedTextColor = UGNGreen
         ),
         shape = RoundedCornerShape(10.dp),
-        textStyle = LocalTextStyle.current.copy(
-            fontFamily = UrbanistMedium
+        textStyle = MaterialTheme.typography.bodyLarge
         )
-    )
 }
 
 @Composable
@@ -353,45 +337,45 @@ fun TableHeader() {
     ) {
         Text(
             text = "No",
-            fontFamily = UrbanistMedium,
+            style = MaterialTheme.typography.bodyLarge,
+            fontSize = 11.sp,
             color = Color.White,
-            fontSize = 14.sp,
             modifier = Modifier.weight(0.5f),
             textAlign = TextAlign.Center
         )
 
         Text(
             text = "Nama Matkul",
-            fontFamily = UrbanistMedium,
+            style =MaterialTheme.typography.bodyLarge,
+            fontSize = 11.sp,
             color = Color.White,
-            fontSize = 14.sp,
             modifier = Modifier.weight(1.5f),
             textAlign = TextAlign.Center
         )
 
         Text(
             text = "Kode MK",
-            fontFamily = UrbanistMedium,
+            style = MaterialTheme.typography.bodyLarge,
+            fontSize = 11.sp,
             color = Color.White,
-            fontSize = 14.sp,
             modifier = Modifier.weight(1f),
             textAlign = TextAlign.Center
         )
 
         Text(
             text = "SKS",
-            fontFamily = UrbanistMedium,
+            style = MaterialTheme.typography.bodyLarge,
+            fontSize = 11.sp,
             color = Color.White,
-            fontSize = 14.sp,
             modifier = Modifier.weight(0.7f),
             textAlign = TextAlign.Center
         )
 
         Text(
             text = "Actions",
-            fontFamily = UrbanistMedium,
+            style = MaterialTheme.typography.bodyLarge,
+            fontSize = 11.sp,
             color = Color.White,
-            fontSize = 14.sp,
             modifier = Modifier.weight(1f),
             textAlign = TextAlign.Center
         )
@@ -421,26 +405,26 @@ fun TableRow(
     ) {
         Text(
             text = number.toString(),
-            fontFamily = UrbanistMedium,
+            style = MaterialTheme.typography.bodyLarge,
+            fontSize = 11.sp,
             color = Black,
-            fontSize = 14.sp,
             modifier = Modifier.weight(0.5f),
             textAlign = TextAlign.Center
         )
         Text(
             text = mataKuliah.nama,
-            fontFamily = UrbanistMedium,
+            style = MaterialTheme.typography.bodyLarge,
+            fontSize = 11.sp,
             color = Black,
-            fontSize = 14.sp,
             modifier = Modifier
                 .weight(1.5f)
                 .padding(horizontal = 8.dp),
         )
         Text(
             text = mataKuliah.kode,
-            fontFamily = UrbanistMedium,
+            style = MaterialTheme.typography.bodyLarge,
+            fontSize = 11.sp,
             color = Black,
-            fontSize = 14.sp,
             modifier = Modifier.weight(1f),
             textAlign = TextAlign.Center
         )
@@ -451,9 +435,9 @@ fun TableRow(
         ) {
             Text(
                 text = "${mataKuliah.sks} SKS",
-                fontFamily = UrbanistSemiBold,
+                style = MaterialTheme.typography.labelSmall,
+                fontSize = 11.sp,
                 color = Color.White,
-                fontSize = 10.sp,
                 modifier = Modifier
                     .background(UGNGreen, RoundedCornerShape(8.dp))
                     .padding(horizontal = 8.dp, vertical = 4.dp)
@@ -508,9 +492,9 @@ fun PaginationControls(
         // Previous Button
         Text(
             text = "< Previous",
-            fontFamily = UrbanistMedium,
+            style = MaterialTheme.typography.bodyLarge,
+            fontSize = 11.sp,
             color = if (currentPage > 1) UGNGreen else Color.Gray,
-            fontSize = 14.sp,
             modifier = Modifier
                 .clickable(enabled = currentPage > 1) { onPreviousClick() }
                 .padding(8.dp)
@@ -518,9 +502,9 @@ fun PaginationControls(
 
         Text(
             text = "Page",
-            fontFamily = UrbanistMedium,
-            color = UGNGreen,
-            fontSize = 14.sp,
+            style = MaterialTheme.typography.bodyLarge,
+            fontSize = 11.sp,
+            color = UGNGreen
         )
 
         // Box untuk current page
@@ -532,26 +516,26 @@ fun PaginationControls(
         ) {
             Text(
                 text = currentPage.toString(),
-                fontFamily = UrbanistBold,
-                color = Color.White,
-                fontSize = 14.sp
+                style = MaterialTheme.typography.bodyLarge,
+                fontSize = 11.sp,
+                color = Color.White
             )
         }
 
         // Teks page ke berapa ("of X")
         Text(
             text = "of $totalPages",
-            fontFamily = UrbanistMedium,
-            color = UGNGreen,
-            fontSize = 14.sp,
+            style = MaterialTheme.typography.bodyLarge,
+            fontSize = 11.sp,
+            color = UGNGreen
         )
 
         // Next Button
         Text(
             text = "Next >",
-            fontFamily = UrbanistMedium,
+            style = MaterialTheme.typography.bodyLarge,
+            fontSize = 11.sp,
             color = if (currentPage < totalPages) UGNGreen else Color.Gray,
-            fontSize = 14.sp,
             modifier = Modifier
                 .clickable(enabled = currentPage < totalPages) { onNextClick() }
                 .padding(8.dp)

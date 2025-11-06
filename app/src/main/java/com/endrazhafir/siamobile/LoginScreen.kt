@@ -183,10 +183,8 @@ fun LoginScreen(
                         onValueChange = { password = it },
                         placeholder = {
                             Text(
-                                text = "Masukkan password email Anda",
-                                fontFamily = urbanistFontFamily,
-                                fontWeight = FontWeight.Medium,
-                                color = UGNGray.copy(alpha = 0.5f)
+                                text = "Masuk",
+                                style = MaterialTheme.typography.bodyMedium
                             )
                         },
                         leadingIcon = {

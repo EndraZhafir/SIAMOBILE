@@ -12,13 +12,15 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.endrazhafir.siamobile.ui.theme.*
-
 @Composable
 fun DashboardScreen(
     modifier: Modifier = Modifier,
@@ -30,12 +32,12 @@ fun DashboardScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.primaryContainer)
+            .background(UGNGreen)
     ) {
         // Toolbar
         Surface(
             modifier = Modifier.fillMaxWidth(),
-            color = MaterialTheme.colorScheme.primaryContainer,
+            color = UGNGreen,
             shadowElevation = 4.dp
         ) {
             Row(
@@ -60,13 +62,13 @@ fun DashboardScreen(
                     Text(
                         text = "Universitas Global Nusantara",
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.secondary,
+                        color = UGNGold,
                         fontWeight = FontWeight.SemiBold
                     )
                     Text(
                         text = "Dashboard Admin",
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onPrimary,
+                        color = White,
                         fontWeight = FontWeight.Bold
                     )
                 }
@@ -76,24 +78,25 @@ fun DashboardScreen(
                     Text(
                         text = "Logout",
                         style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onPrimary,
+                        color = White,
                         fontWeight = FontWeight.Bold
                     )
                 }
             }
         }
 
-        // Statistics Section
+        // Statistics
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.primaryContainer)
+                .background(UGNGreen)
                 .padding(20.dp)
         ) {
             Text(
                 text = "Statistik",
                 style = MaterialTheme.typography.displayLarge,
-                color = MaterialTheme.colorScheme.onPrimary,
+                fontSize = 30.sp,
+                color = White,
                 modifier = Modifier.padding(bottom = 10.dp)
             )
 
@@ -104,26 +107,23 @@ fun DashboardScreen(
             ) {
                 item {
                     StatCard(
-                        icon = R.drawable.ic_student_goldbg,
-                        title = "Total Mahasiswa",
-                        count = "150",
-                        subtitle = "Mahasiswa Aktif"
+                        icon = R.drawable.ic_student_gold,
+                        title = "Mahasiswa Aktif",
+                        count = "150"
                     )
                 }
                 item {
                     StatCard(
-                        icon = R.drawable.ic_subject_goldbg,
-                        title = "Total Mata Kuliah",
-                        count = "45",
-                        subtitle = "Mata Kuliah Tersedia"
+                        icon = R.drawable.ic_subject_gold,
+                        title = "Mata Kuliah Aktif",
+                        count = "45"
                     )
                 }
                 item {
                     StatCard(
-                        icon = R.drawable.ic_lecturer_goldbg,
-                        title = "Total Dosen",
-                        count = "32",
-                        subtitle = "Dosen Aktif"
+                        icon = R.drawable.ic_lecturer_gold,
+                        title = "Dosen Aktif",
+                        count = "32"
                     )
                 }
             }
@@ -133,14 +133,15 @@ fun DashboardScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
+                .background(BackgroundCream)
                 .padding(20.dp)
                 .verticalScroll(rememberScrollState())
         ) {
             Text(
                 text = "Sistem Manajemen",
                 style = MaterialTheme.typography.displayLarge,
-                color = MaterialTheme.colorScheme.primary,
+                fontSize = 30.sp,
+                color = UGNGreen,
                 modifier = Modifier.padding(bottom = 20.dp)
             )
 
@@ -180,7 +181,6 @@ fun StatCard(
     icon: Int,
     title: String,
     count: String,
-    subtitle: String,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -189,7 +189,7 @@ fun StatCard(
             .fillMaxHeight(),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.secondary
+            containerColor = BackgroundCream
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
     ) {
@@ -203,29 +203,20 @@ fun StatCard(
             Image(
                 painter = painterResource(id = icon),
                 contentDescription = title,
-                modifier = Modifier.size(60.dp)
+                modifier = Modifier.size(60.dp),
+                colorFilter = ColorFilter.tint(UGNGold)
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = count,
-                fontSize = 32.sp,
-                fontFamily = urbanistFontFamily,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primaryContainer
+                style = MaterialTheme.typography.headlineLarge,
+                color = UGNGold
             )
             Text(
                 text = title,
-                fontSize = 14.sp,
-                fontFamily = urbanistFontFamily,
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.primaryContainer
-            )
-            Text(
-                text = subtitle,
-                fontSize = 10.sp,
-                fontFamily = urbanistFontFamily,
-                fontWeight = FontWeight.Medium,
-                color = MaterialTheme.colorScheme.primaryContainer
+                style = MaterialTheme.typography.titleMedium,
+                fontSize = 18.sp,
+                color = UGNGold
             )
         }
     }
@@ -259,7 +250,7 @@ fun ManagementCard(
             Image(
                 painter = painterResource(id = icon),
                 contentDescription = title,
-                modifier = Modifier.size(60.dp)
+                modifier = Modifier.size(60.dp),
             )
             Column(
                 modifier = Modifier
@@ -276,7 +267,7 @@ fun ManagementCard(
                 )
                 Text(
                     text = subtitle,
-                    fontSize = 12.sp,
+                    fontSize = 11.sp,
                     fontFamily = urbanistFontFamily,
                     fontWeight = FontWeight.Medium,
                     color = UGNGold
@@ -293,4 +284,3 @@ fun DashboardScreenPreview() {
         DashboardScreen()
     }
 }
-
