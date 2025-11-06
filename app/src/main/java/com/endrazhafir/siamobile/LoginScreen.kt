@@ -47,7 +47,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.endrazhafir.siamobile.R
 import com.endrazhafir.siamobile.ui.theme.SiaMobileTheme
 import com.endrazhafir.siamobile.ui.theme.UGNGray
 import com.endrazhafir.siamobile.ui.theme.urbanistFontFamily
