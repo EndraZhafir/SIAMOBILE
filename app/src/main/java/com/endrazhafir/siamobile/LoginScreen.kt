@@ -1,4 +1,4 @@
-import com.endrazhafir.siamobile.R
+package com.endrazhafir.siamobile
 
 // Foundation (Layout, Shape, Image, dll.)
 import androidx.compose.foundation.Image
@@ -22,6 +22,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -36,10 +37,8 @@ import androidx.compose.runtime.setValue
 // UI (Core UI, Modifier, Color, Alignment, dll.)
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -48,6 +47,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.endrazhafir.siamobile.R
+import com.endrazhafir.siamobile.ui.theme.SiaMobileTheme
+import com.endrazhafir.siamobile.ui.theme.UGNGray
 import com.endrazhafir.siamobile.ui.theme.urbanistFontFamily
 
 @Composable
@@ -62,7 +64,7 @@ fun LoginScreen(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(colorResource(id = R.color.ugn_green))
+            .background(MaterialTheme.colorScheme.primary)
     ) {
         Column(
             modifier = Modifier.fillMaxSize(),
@@ -88,7 +90,7 @@ fun LoginScreen(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
                 colors = CardDefaults.cardColors(
-                    containerColor = colorResource(id = R.color.background_cream)
+                    containerColor = MaterialTheme.colorScheme.background
                 )
             ) {
                 Column(
@@ -98,11 +100,9 @@ fun LoginScreen(
                 ) {
                     // Title
                     Text(
-                        text = stringResource(R.string.login_text),
-                        fontFamily = urbanistFontFamily,
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = colorResource(id = R.color.ugn_green),
+                        text = "Login",
+                        style = MaterialTheme.typography.displayLarge,
+                        color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(bottom = 10.dp),
@@ -111,10 +111,9 @@ fun LoginScreen(
 
                     // Welcome Text
                     Text(
-                        text = stringResource(R.string.selamat_datang),
-                        fontFamily = urbanistFontFamily,
-                        fontSize = 12.sp,
-                        color = colorResource(id = R.color.black),
+                        text = "Hai, senang melihat Anda! Isi data Anda untuk masuk ke dashboard Admin.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onBackground,
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(bottom = 10.dp),
@@ -123,11 +122,9 @@ fun LoginScreen(
 
                     // Email Label
                     Text(
-                        text = stringResource(R.string.email),
-                        fontFamily = urbanistFontFamily,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = colorResource(id = R.color.ugn_green),
+                        text = "Email",
+                        style = MaterialTheme.typography.titleLarge,
+                        color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(bottom = 10.dp)
@@ -139,19 +136,18 @@ fun LoginScreen(
                         onValueChange = { email = it },
                         placeholder = {
                             Text(
-                                text = stringResource(R.string.email_hint),
+                                text = "Masukkan email Anda",
                                 fontFamily = urbanistFontFamily,
                                 fontWeight = FontWeight.Medium,
-                                color = colorResource(id = R.color.ugn_gray).copy(alpha = 0.5f) // Set font and 25% opacity
+                                color = UGNGray.copy(alpha = 0.5f)
                             )
                         },
                         leadingIcon = {
                             Icon(
                                 painter = painterResource(R.drawable.ic_mail),
                                 contentDescription = "Email",
-                                modifier = Modifier
-                                    .size(24.dp),
-                                tint = colorResource(id = R.color.ugn_gray)
+                                modifier = Modifier.size(24.dp),
+                                tint = UGNGray
                             )
                         },
                         modifier = Modifier
@@ -163,21 +159,19 @@ fun LoginScreen(
                         singleLine = true,
                         shape = RoundedCornerShape(10.dp),
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = colorResource(id = R.color.ugn_gold),
-                            unfocusedBorderColor = colorResource(id = R.color.ugn_gold),
-                            focusedLeadingIconColor = colorResource(id = R.color.ugn_green),
-                            unfocusedLeadingIconColor = colorResource(id = R.color.ugn_green),
-                            cursorColor = colorResource(id = R.color.ugn_green)
+                            focusedBorderColor = MaterialTheme.colorScheme.secondary,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.secondary,
+                            focusedLeadingIconColor = MaterialTheme.colorScheme.primary,
+                            unfocusedLeadingIconColor = MaterialTheme.colorScheme.primary,
+                            cursorColor = MaterialTheme.colorScheme.primary
                         )
                     )
 
                     // Password Label
                     Text(
-                        text = stringResource(R.string.password),
-                        fontFamily = urbanistFontFamily,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = colorResource(id = R.color.ugn_green),
+                        text = "Password",
+                        style = MaterialTheme.typography.titleLarge,
+                        color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(bottom = 10.dp)
@@ -189,19 +183,18 @@ fun LoginScreen(
                         onValueChange = { password = it },
                         placeholder = {
                             Text(
-                                text = stringResource(R.string.password_hint),
+                                text = "Masukkan password email Anda",
                                 fontFamily = urbanistFontFamily,
                                 fontWeight = FontWeight.Medium,
-                                color = colorResource(id = R.color.ugn_gray).copy(alpha = 0.5f) // Set font and 25% opacity
+                                color = UGNGray.copy(alpha = 0.5f)
                             )
                         },
                         leadingIcon = {
                             Icon(
                                 painter = painterResource(R.drawable.ic_lock),
                                 contentDescription = "Password",
-                                modifier = Modifier
-                                    .size(24.dp),
-                                tint = colorResource(id = R.color.ugn_gray)
+                                modifier = Modifier.size(24.dp),
+                                tint = UGNGray
                             )
                         },
                         trailingIcon = {
@@ -212,9 +205,8 @@ fun LoginScreen(
                                         else R.drawable.ic_visible_off
                                     ),
                                     contentDescription = "Toggle password",
-                                    modifier = Modifier
-                                        .size(24.dp),
-                                    tint = colorResource(id = R.color.ugn_gray)
+                                    modifier = Modifier.size(24.dp),
+                                    tint = UGNGray
                                 )
                             }
                         },
@@ -231,13 +223,13 @@ fun LoginScreen(
                         singleLine = true,
                         shape = RoundedCornerShape(10.dp),
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = colorResource(id = R.color.ugn_gold),
-                            unfocusedBorderColor = colorResource(id = R.color.ugn_gold),
-                            focusedLeadingIconColor = colorResource(id = R.color.ugn_green),
-                            unfocusedLeadingIconColor = colorResource(id = R.color.ugn_green),
-                            focusedTrailingIconColor = colorResource(id = R.color.ugn_green),
-                            unfocusedTrailingIconColor = colorResource(id = R.color.ugn_green),
-                            cursorColor = colorResource(id = R.color.ugn_green)
+                            focusedBorderColor = MaterialTheme.colorScheme.secondary,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.secondary,
+                            focusedLeadingIconColor = MaterialTheme.colorScheme.primary,
+                            unfocusedLeadingIconColor = MaterialTheme.colorScheme.primary,
+                            focusedTrailingIconColor = MaterialTheme.colorScheme.primary,
+                            unfocusedTrailingIconColor = MaterialTheme.colorScheme.primary,
+                            cursorColor = MaterialTheme.colorScheme.primary
                         )
                     )
 
@@ -249,11 +241,11 @@ fun LoginScreen(
                             .height(56.dp),
                         shape = RoundedCornerShape(12.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = colorResource(id = R.color.ugn_gold)
+                            containerColor = MaterialTheme.colorScheme.secondary
                         )
                     ) {
                         Text(
-                            text = stringResource(R.string.login_button),
+                            text = "Masuk",
                             fontFamily = urbanistFontFamily,
                             fontSize = 16.sp,
                             fontWeight = FontWeight.SemiBold
@@ -268,5 +260,7 @@ fun LoginScreen(
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun LoginScreenPreview() {
-    LoginScreen()
+    SiaMobileTheme {
+        LoginScreen()
+    }
 }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="shape_appearance_bottom_sheet"> <!-- Tampilan card rounded hanya bagian atas -->
+    <style name="shape_appearance_bottom_sheet">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSizeTopLeft">12dp</item>
         <item name="cornerSizeTopRight">12dp</item>
