@@ -3,54 +3,559 @@ package com.endrazhafir.siamobile
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.endrazhafir.siamobile.data.MataKuliah
+import com.endrazhafir.siamobile.ui.theme.Black
 import com.endrazhafir.siamobile.ui.theme.SiaMobileTheme
+
+// Warna custom
+val UGNGreen = Color(0xFF015023)
+val UGNGreenDark = Color(0xFF014820)
+val UGNGold = Color(0xFFDABC4E)
+val UGNLightGold = Color(0xFFF4EAC8)
+val BackgroundCream = Color(0xFFFBF8ED)
+
+// FontFamily custom
+val UrbanistBold = FontFamily(Font(R.font.urbanistbold, FontWeight.Bold))
+val UrbanistSemiBold = FontFamily(Font(R.font.urbanistsemibold, FontWeight.SemiBold))
+val UrbanistMedium = FontFamily(Font(R.font.urbanistmedium, FontWeight.Medium))
 
 class StatsActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             SiaMobileTheme {
-                StatsScreen()
+                StatsScreen(
+                    onBackClick = { finish() }
+                )
             }
         }
     }
 }
 
 @Composable
-fun StatsScreen(modifier: Modifier = Modifier) {
-    Box(
+fun StatsScreen(
+    modifier: Modifier = Modifier,
+    onBackClick: () -> Unit = {}
+) {
+    // Contoh sample data
+    val mataKuliahList = remember {
+        mutableStateListOf(
+            MataKuliah(1, "Pemrograman Mobile", "IF-301", 3),
+            MataKuliah(2, "Basis Data Lanjut", "IF-302", 3),
+            MataKuliah(3, "Sistem Operasi", "IF-303", 3),
+            MataKuliah(4, "Jaringan Komputer", "IF-304", 4),
+            MataKuliah(5, "Kecerdasan Buatan", "IF-305", 3),
+            MataKuliah(6, "Negromancy", "NG-305", 3),
+            MataKuliah(7, "Ilmu Hitam", "IH-305", 3),
+        )
+    }
+
+    var searchQuery by remember { mutableStateOf("") }
+    var currentPage by remember { mutableStateOf(1) }
+    val itemsPerPage = 10
+
+    val filteredList = remember(searchQuery, mataKuliahList) {
+        if (searchQuery.isEmpty()) {
+            mataKuliahList
+        } else {
+            mataKuliahList.filter {
+                it.nama.contains(searchQuery, ignoreCase = true) ||
+                it.kode.contains(searchQuery, ignoreCase = true)
+            }
+        }
+    }
+
+    val totalPages = remember(filteredList.size) {
+        kotlin.math.max(1, (filteredList.size + itemsPerPage - 1) / itemsPerPage)
+    }
+
+    val paginatedList = remember(filteredList, currentPage) {
+        val startIndex = (currentPage - 1) * itemsPerPage
+        val endIndex = kotlin.math.min(startIndex + itemsPerPage, filteredList.size)
+        if (startIndex < filteredList.size) {
+            filteredList.subList(startIndex, endIndex)
+        } else {
+            emptyList()
+        }
+    }
+
+    Column(
         modifier = modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background),
-        contentAlignment = Alignment.Center
+            .background(BackgroundCream)
     ) {
+        // Topbar
+        TopBar(onBackClick = onBackClick)
+
+        // Semua isi konten (kecuali topbar) dapat di-scroll
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 20.dp),
+            contentPadding = PaddingValues(vertical = 20.dp),
+            verticalArrangement = Arrangement.spacedBy(20.dp)
+        ) {
+            // Header dengan title dan tombol tambah
+            item{
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Statistik Mata Kuliah",
+                        color = UGNGreen,
+                        fontFamily = UrbanistBold,
+                        fontSize = 24.sp,
+                        modifier = Modifier.weight(1f)
+                    )
+
+                    Button(
+                        onClick = { /* Handle add */ },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = UGNGreen
+                        ),
+                        shape = RoundedCornerShape(10.dp),
+                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
+                        modifier = Modifier.height(36.dp)
+                    ) {
+                        Text(
+                            text = "Tambah",
+                            fontFamily = UrbanistSemiBold,
+                            fontSize = 12.sp
+                        )
+                    }
+                }
+            }
+
+            item {
+                // Statistics Card
+                StatsCard(totalActive = mataKuliahList.size)
+            }
+
+            item {
+                // Search Field
+                SearchField(
+                    value = searchQuery,
+                    onValueChange = {
+                        searchQuery = it
+                        currentPage = 1
+                    }
+                )
+            }
+
+            // Group table (header + rows)
+            item {
+                Column{
+                    // Table Header
+                    TableHeader()
+
+                    paginatedList.forEachIndexed { index, mataKuliah ->
+                        val globalIndex = (currentPage - 1) * itemsPerPage + index + 1
+
+                        val isLastItem = (index == paginatedList.lastIndex)
+
+                        TableRow(
+                            number = globalIndex,
+                            mataKuliah = mataKuliah,
+                            isLastItem = isLastItem,
+                            onEditClick = { /* Handle edit */ },
+                            onDeleteClick = {
+                                mataKuliahList.remove(mataKuliah)
+                            }
+                        )
+                    }
+                }
+            }
+
+            item {
+                // Pagination
+                PaginationControls (
+                    currentPage = currentPage,
+                    totalPages = totalPages,
+                    onPreviousClick = { if (currentPage > 1) currentPage-- },
+                    onNextClick = { if (currentPage < totalPages) currentPage++ }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun TopBar(onBackClick: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(UGNGreenDark)
+            .padding(10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Start
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.rounded_arrow_back_24),
+            contentDescription = "Back",
+            modifier = Modifier
+                .size(44.dp)
+                .clickable { onBackClick() }
+        )
+
+        Spacer(modifier = Modifier.weight(1f))
+
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            modifier = Modifier
+                .padding(horizontal = 10.dp),
+            horizontalAlignment = Alignment.End
         ) {
             Text(
-                text = "Statistics Screen",
-                style = MaterialTheme.typography.displayLarge,
-                color = MaterialTheme.colorScheme.primary,
+                text = "Universitas Global Nusantara",
+                fontFamily = UrbanistSemiBold,
+                color = UGNGold,
+                fontSize = 12.sp
+            )
+            Text(
+                text = "Dashboard Admin",
+                fontFamily = UrbanistSemiBold,
+                color = Color.White,
+                fontSize = 12.sp,
                 fontWeight = FontWeight.Bold
             )
-            Spacer(modifier = Modifier.height(16.dp))
+        }
+
+        Image(
+            painter = painterResource(id = R.drawable.ic_color),
+            contentDescription = "UGN Logo",
+            modifier = Modifier.size(50.dp)
+        )
+    }
+}
+
+@Composable
+fun StatsCard(totalActive: Int) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(150.dp),
+        shape = RoundedCornerShape(10.dp),
+        colors = CardDefaults.cardColors(containerColor = UGNGreen)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(20.dp)
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.TopStart),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Total Mata Kuliah",
+                    color = Color.White,
+                    fontFamily = UrbanistBold,
+                    fontSize = 24.sp,
+                    modifier = Modifier.weight(1f)
+                )
+
+                Image(
+                    painter = painterResource(id = R.drawable.ic_subject_goldbg),
+                    contentDescription = "Subject Icon",
+                    modifier = Modifier.size(32.dp)
+                )
+            }
+
+            Column(
+                modifier = Modifier.align(Alignment.BottomStart)
+            ) {
+                Text(
+                    text = totalActive.toString(),
+                    fontFamily = UrbanistBold,
+                    color = Color.White,
+                    fontSize = 24.sp
+                )
+                Text(
+                    text = "Mata kuliah aktif",
+                    fontFamily = UrbanistSemiBold,
+                    color = Color.White,
+                    fontSize = 14.sp
+                )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SearchField(
+    value: String,
+    onValueChange: (String) -> Unit
+) {
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        modifier = Modifier.fillMaxWidth(),
+        placeholder = {
             Text(
-                text = "Coming Soon...",
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onBackground
+                "Cari Matkul",
+                fontFamily = UrbanistMedium,
+                color = UGNGold
+            )
+        },
+        trailingIcon = {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_search),
+                contentDescription = "Search",
+                tint = UGNGold,
+                modifier = Modifier.size(24.dp)
+            )
+        },
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedBorderColor = UGNGold,
+            unfocusedBorderColor = UGNGold,
+            focusedTextColor = UGNGreen,
+            unfocusedTextColor = UGNGreen
+        ),
+        shape = RoundedCornerShape(10.dp),
+        textStyle = LocalTextStyle.current.copy(
+            fontFamily = UrbanistMedium
+        )
+    )
+}
+
+@Composable
+fun TableHeader() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(UGNGold, RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp))
+            .padding(8.dp)
+    ) {
+        Text(
+            text = "No",
+            fontFamily = UrbanistMedium,
+            color = Color.White,
+            fontSize = 14.sp,
+            modifier = Modifier.weight(0.5f),
+            textAlign = TextAlign.Center
+        )
+
+        Text(
+            text = "Nama Matkul",
+            fontFamily = UrbanistMedium,
+            color = Color.White,
+            fontSize = 14.sp,
+            modifier = Modifier.weight(1.5f),
+            textAlign = TextAlign.Center
+        )
+
+        Text(
+            text = "Kode MK",
+            fontFamily = UrbanistMedium,
+            color = Color.White,
+            fontSize = 14.sp,
+            modifier = Modifier.weight(1f),
+            textAlign = TextAlign.Center
+        )
+
+        Text(
+            text = "SKS",
+            fontFamily = UrbanistMedium,
+            color = Color.White,
+            fontSize = 14.sp,
+            modifier = Modifier.weight(0.7f),
+            textAlign = TextAlign.Center
+        )
+
+        Text(
+            text = "Actions",
+            fontFamily = UrbanistMedium,
+            color = Color.White,
+            fontSize = 14.sp,
+            modifier = Modifier.weight(1f),
+            textAlign = TextAlign.Center
+        )
+    }
+}
+
+@Composable
+fun TableRow(
+    number: Int,
+    mataKuliah: MataKuliah,
+    isLastItem: Boolean,
+    onEditClick: () -> Unit,
+    onDeleteClick: () -> Unit
+) {
+    val rowShape = if (isLastItem) {
+        RoundedCornerShape(bottomStart = 8.dp, bottomEnd = 8.dp)
+    } else {
+        androidx.compose.ui.graphics.RectangleShape
+    }
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(UGNLightGold, shape = rowShape)
+            .padding(8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = number.toString(),
+            fontFamily = UrbanistMedium,
+            color = Black,
+            fontSize = 14.sp,
+            modifier = Modifier.weight(0.5f),
+            textAlign = TextAlign.Center
+        )
+        Text(
+            text = mataKuliah.nama,
+            fontFamily = UrbanistMedium,
+            color = Black,
+            fontSize = 14.sp,
+            modifier = Modifier
+                .weight(1.5f)
+                .padding(horizontal = 8.dp),
+        )
+        Text(
+            text = mataKuliah.kode,
+            fontFamily = UrbanistMedium,
+            color = Black,
+            fontSize = 14.sp,
+            modifier = Modifier.weight(1f),
+            textAlign = TextAlign.Center
+        )
+
+        Box(
+            modifier = Modifier.weight(0.7f),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = "${mataKuliah.sks} SKS",
+                fontFamily = UrbanistSemiBold,
+                color = Color.White,
+                fontSize = 10.sp,
+                modifier = Modifier
+                    .background(UGNGreen, RoundedCornerShape(8.dp))
+                    .padding(horizontal = 8.dp, vertical = 4.dp)
             )
         }
+
+        Row(
+            modifier = Modifier.weight(1f),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            // Edit Button
+            IconButton(
+                onClick = onEditClick,
+                modifier = Modifier.size(32.dp)
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_edit),
+                    contentDescription = "Edit",
+                    tint = UGNGold,
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+
+            // Delete Button
+            IconButton(
+                onClick = onDeleteClick,
+                modifier = Modifier.size(32.dp)
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_delete),
+                    contentDescription = "Delete",
+                    tint = Color.Red,
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun PaginationControls(
+    currentPage: Int,
+    totalPages: Int,
+    onPreviousClick: () -> Unit,
+    onNextClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally)
+    ) {
+        // Previous Button
+        Text(
+            text = "< Previous",
+            fontFamily = UrbanistMedium,
+            color = if (currentPage > 1) UGNGreen else Color.Gray,
+            fontSize = 14.sp,
+            modifier = Modifier
+                .clickable(enabled = currentPage > 1) { onPreviousClick() }
+                .padding(8.dp)
+        )
+
+        Text(
+            text = "Page",
+            fontFamily = UrbanistMedium,
+            color = UGNGreen,
+            fontSize = 14.sp,
+        )
+
+        // Box untuk current page
+        Box(
+            modifier = Modifier
+                .background(UGNGreen, RoundedCornerShape(4.dp))
+                .padding(horizontal = 10.dp, vertical = 6.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = currentPage.toString(),
+                fontFamily = UrbanistBold,
+                color = Color.White,
+                fontSize = 14.sp
+            )
+        }
+
+        // Teks page ke berapa ("of X")
+        Text(
+            text = "of $totalPages",
+            fontFamily = UrbanistMedium,
+            color = UGNGreen,
+            fontSize = 14.sp,
+        )
+
+        // Next Button
+        Text(
+            text = "Next >",
+            fontFamily = UrbanistMedium,
+            color = if (currentPage < totalPages) UGNGreen else Color.Gray,
+            fontSize = 14.sp,
+            modifier = Modifier
+                .clickable(enabled = currentPage < totalPages) { onNextClick() }
+                .padding(8.dp)
+        )
     }
 }
 
