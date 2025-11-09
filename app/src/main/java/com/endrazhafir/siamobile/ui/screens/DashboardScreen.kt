@@ -1,4 +1,4 @@
-package com.endrazhafir.siamobile
+package com.endrazhafir.siamobile.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -9,7 +9,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
@@ -18,25 +18,27 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.endrazhafir.siamobile.R
 import com.endrazhafir.siamobile.ui.theme.*
+
 @Composable
 fun DashboardScreen(
-    modifier: Modifier = Modifier,
     onLogoutClick: () -> Unit = {},
     onStudentClick: () -> Unit = {},
     onSubjectClick: () -> Unit = {},
     onLecturerClick: () -> Unit = {}
 ) {
     Column(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxSize()
-            .background(UGNGreen)
+            .background(UGNGreen),
     ) {
         // Toolbar
         Surface(
-            modifier = Modifier.fillMaxWidth(),
-            color = UGNGreen,
-            shadowElevation = 4.dp
+            modifier = Modifier
+                .fillMaxWidth()
+                .statusBarsPadding(),
+            color = UGNGreen
         ) {
             Row(
                 modifier = Modifier
@@ -132,6 +134,7 @@ fun DashboardScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .background(BackgroundCream)
+                .navigationBarsPadding()
                 .padding(20.dp)
                 .verticalScroll(rememberScrollState())
         ) {
@@ -174,6 +177,7 @@ fun DashboardScreen(
     }
 }
 
+
 @Composable
 fun StatCard(
     icon: Int,
@@ -189,7 +193,7 @@ fun StatCard(
         colors = CardDefaults.cardColors(
             containerColor = BackgroundCream
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(
             modifier = Modifier
@@ -237,7 +241,7 @@ fun ManagementCard(
         colors = CardDefaults.cardColors(
             containerColor = White
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Row(
             modifier = Modifier
@@ -275,7 +279,11 @@ fun ManagementCard(
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true)
+@Preview(
+    showBackground = true,
+    showSystemUi = true,
+    device = "spec:width=393dp,height=851dp,dpi=420"
+)
 @Composable
 fun DashboardScreenPreview() {
     SiaMobileTheme {

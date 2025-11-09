@@ -1,7 +1,4 @@
 <resources>
-    <!-- Base application theme - Using AppCompat for XML layouts and Compose -->
-    <style name="Theme.SIAMOBILE" parent="Theme.Material3.Light.NoActionBar">
-        <item name="colorPrimary">@color/ugn_green</item>
-        <item name="colorSecondary">@color/ugn_gold</item>
-    </style>
+    <!-- Base application theme for Compose -->
+    <style name="Theme.SIAMOBILE" parent="android:Theme.Material.Light.NoActionBar" />
 </resources>

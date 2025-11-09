@@ -1,7 +1,4 @@
 <resources>
-    <!-- Base application theme for night mode -->
-    <style name="Theme.SIAMOBILE" parent="Theme.Material3.Dark.NoActionBar">
-        <item name="colorPrimary">@color/ugn_green</item>
-        <item name="colorSecondary">@color/ugn_gold</item>
-    </style>
+    <!-- Base application theme for night mode (Compose) -->
+    <style name="Theme.SIAMOBILE" parent="android:Theme.Material.NoActionBar" />
 </resources>

@@ -1,21 +1,10 @@
-package com.endrazhafir.siamobile
+package com.endrazhafir.siamobile.ui.screens
 
-// Foundation (Layout, Shape, Image, dll.)
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-
-// Material 3 (Komponen UI)
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -26,15 +15,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
-
-// Runtime (State Management)
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-
-// UI (Core UI, Modifier, Color, Alignment, dll.)
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -47,26 +32,26 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.endrazhafir.siamobile.ui.theme.SiaMobileTheme
-import com.endrazhafir.siamobile.ui.theme.UGNGray
-import com.endrazhafir.siamobile.ui.theme.urbanistFontFamily
+import com.endrazhafir.siamobile.R
+import com.endrazhafir.siamobile.ui.theme.*
 
 @Composable
 fun LoginScreen(
-    modifier: Modifier = Modifier,
     onLoginClick: (String, String) -> Unit = { _, _ -> }
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
 
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.primary)
-    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.primary),
+        ) {
         Column(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .statusBarsPadding(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // fungsi Spacer untuk push logo ke tengah secara vertical
@@ -77,8 +62,8 @@ fun LoginScreen(
                 painter = painterResource(id = R.drawable.logo_color),
                 contentDescription = "Logo",
                 modifier = Modifier
-                    .width(400.dp)
-                    .height(400.dp),
+                    .width(350.dp)
+                    .height(350.dp),
                 contentScale = ContentScale.Fit
             )
 
@@ -86,16 +71,18 @@ fun LoginScreen(
 
             // Card Content
             Card(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth(),
                 shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
                 colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.background
+                    containerColor = BackgroundCream
                 )
             ) {
                 Column(
                     modifier = Modifier
                         .padding(20.dp)
                         .fillMaxWidth()
+                        .navigationBarsPadding(),
                 ) {
                     // Title
                     Text(
@@ -112,7 +99,7 @@ fun LoginScreen(
                     Text(
                         text = "Hai, senang melihat Anda! Isi data Anda untuk masuk ke dashboard Admin.",
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onBackground,
+                        color = Black,
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(bottom = 10.dp),
@@ -182,8 +169,10 @@ fun LoginScreen(
                         onValueChange = { password = it },
                         placeholder = {
                             Text(
-                                text = "Masuk",
-                                style = MaterialTheme.typography.bodyMedium
+                                text = "Masukkan password Anda",
+                                fontFamily = urbanistFontFamily,
+                                fontWeight = FontWeight.Medium,
+                                color = UGNGray.copy(alpha = 0.5f)
                             )
                         },
                         leadingIcon = {
@@ -213,7 +202,7 @@ fun LoginScreen(
                             PasswordVisualTransformation(),
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(bottom = 10.dp),
+                            .padding(bottom = 30.dp),
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Password
                         ),
@@ -254,7 +243,12 @@ fun LoginScreen(
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true)
+
+@Preview(
+    showBackground = true,
+    showSystemUi = true,
+    device = "spec:width=393dp,height=851dp,dpi=420"
+)
 @Composable
 fun LoginScreenPreview() {
     SiaMobileTheme {
