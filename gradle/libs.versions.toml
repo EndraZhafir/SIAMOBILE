@@ -1,14 +1,13 @@
 [versions]
-agp = "8.13.0"
+agp = "8.13.1"
 kotlin = "2.2.21"
-coreKtx = "1.10.1"
+coreKtx = "1.17.0"
 junit = "4.13.2"
-junitVersion = "1.1.5"
-espressoCore = "3.5.1"
-lifecycleRuntimeKtx = "2.6.1"
-activityCompose = "1.8.2"
-composeBom = "2024.02.00"
-composeCompiler = "2.2.21"
+junitVersion = "1.3.0"
+espressoCore = "3.7.0"
+lifecycleRuntimeKtx = "2.9.4"
+activityCompose = "1.11.0"
+composeBom = "2025.11.00"
 navigationCompose = "2.9.6"
 
 [libraries]
@@ -31,5 +30,5 @@ androidx-compose-material3 = { group = "androidx.compose.material3", name = "mat
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
-compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "composeCompiler" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 

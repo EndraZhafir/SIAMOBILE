@@ -1,5 +1,6 @@
 package com.endrazhafir.siamobile
 
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.widget.Toast
@@ -31,16 +32,22 @@ class DashboardActivity : ComponentActivity() {
                         finish()
                     },
                     onStudentClick = {
-                        Toast.makeText(this, "Tambah Mahasiswa", Toast.LENGTH_SHORT).show()
-                        // Navigate to student management
+                        val intent = Intent(this, StatsActivity::class.java).apply {
+                            putExtra("SCREEN_TYPE", "MAHASISWA")
+                        }
+                        startActivity(intent)
                     },
                     onSubjectClick = {
-                        Toast.makeText(this, "Tambah Mata Kuliah", Toast.LENGTH_SHORT).show()
-                        // Navigate to subject management
+                        val intent = Intent(this, StatsActivity::class.java).apply {
+                            putExtra("SCREEN_TYPE", "MATAKULIAH")
+                        }
+                        startActivity(intent)
                     },
                     onLecturerClick = {
-                        Toast.makeText(this, "Tambah Dosen", Toast.LENGTH_SHORT).show()
-                        // Navigate to lecturer management
+                        val intent = Intent(this, StatsActivity::class.java).apply {
+                            putExtra("SCREEN_TYPE", "DOSEN")
+                        }
+                        startActivity(intent)
                     }
                 )
             }

@@ -23,6 +23,7 @@ import com.endrazhafir.siamobile.ui.theme.*
 
 @Composable
 fun StatsScreen(
+    type: String,
     onBackClick: () -> Unit = {}
 ) {
     // Contoh sample data
@@ -67,6 +68,56 @@ fun StatsScreen(
         }
     }
 
+    // Judul sebelah tombol tambah
+    val title = remember(type) {
+        when (type) {
+            "MAHASISWA" -> "Statistik Mahasiswa"
+            "MATAKULIAH" -> "Statistik Mata Kuliah"
+            "DOSEN" -> "Statistik Dosen"
+            else -> "Statistik"
+        }
+    }
+
+    // Judul dalam card-nya.
+    val cardTitle = remember(type) {
+        when (type) {
+            "MAHASISWA" -> "Total Mahasiswa"
+            "MATAKULIAH" -> "Total Mata Kuliah"
+            "DOSEN" -> "Total Dosen"
+            else -> "Total"
+        }
+    }
+
+    // Text dalam card-nya dibawah angka total.
+    val cardSubtitle = remember(type) {
+        when (type) {
+            "MAHASISWA" -> "Mahasiswa aktif"
+            "MATAKULIAH" -> "Mata Kuliah aktif"
+            "DOSEN" -> "Dosen aktif"
+            else -> "Aktif"
+        }
+    }
+
+    // Text placeholder di searchbar.
+    val searchPlaceholder = remember(type) {
+        when (type) {
+            "MAHASISWA" -> "Cari Mahasiswa"
+            "MATAKULIAH" -> "Cari Matkul"
+            "DOSEN" -> "Cari Dosen"
+            else -> "Cari..."
+        }
+    }
+
+    // Icon sesuai card-nya
+    val cardIconRes = remember(type) {
+        when (type) {
+            "MAHASISWA" -> R.drawable.ic_student_goldbg
+            "MATAKULIAH" -> R.drawable.ic_subject_goldbg
+            "DOSEN" -> R.drawable.ic_lecturer_goldbg
+            else -> R.drawable.ic_student_goldbg
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -94,7 +145,7 @@ fun StatsScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Statistik Mata Kuliah",
+                        text = title,
                         color = UGNGreen,
                         style = MaterialTheme.typography.displayLarge,
                         fontSize = 20.sp,
@@ -120,7 +171,12 @@ fun StatsScreen(
 
             item {
                 // Statistics Card
-                StatsDetailCard(totalActive = mataKuliahList.size)
+                StatsDetailCard(
+                    totalActive = mataKuliahList.size,
+                    title = cardTitle,
+                    subtitle = cardSubtitle,
+                    iconResId = cardIconRes
+                )
             }
 
             item {
@@ -130,7 +186,8 @@ fun StatsScreen(
                     onValueChange = {
                         searchQuery = it
                         currentPage = 1
-                    }
+                    },
+                    placeholder = searchPlaceholder
                 )
             }
 
@@ -220,7 +277,12 @@ fun StatsTopBar(onBackClick: () -> Unit) {
 }
 
 @Composable
-fun StatsDetailCard(totalActive: Int) {
+fun StatsDetailCard(
+    totalActive: Int,
+    title: String,
+    subtitle: String,
+    iconResId: Int
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -241,7 +303,7 @@ fun StatsDetailCard(totalActive: Int) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Total Mata Kuliah",
+                    text = title,
                     color = Color.White,
                     style = MaterialTheme.typography.displayLarge,
                     fontSize = 20.sp,
@@ -249,8 +311,8 @@ fun StatsDetailCard(totalActive: Int) {
                 )
 
                 Image(
-                    painter = painterResource(id = R.drawable.ic_subject_goldbg),
-                    contentDescription = "Subject Icon",
+                    painter = painterResource(id = iconResId),
+                    contentDescription = title,
                     modifier = Modifier.size(32.dp)
                 )
             }
@@ -265,7 +327,7 @@ fun StatsDetailCard(totalActive: Int) {
                     color = Color.White
                 )
                 Text(
-                    text = "Mata kuliah aktif",
+                    text = subtitle,
                     style = MaterialTheme.typography.bodySmall,
                     fontSize = 16.sp,
                     color = Color.White
@@ -275,11 +337,11 @@ fun StatsDetailCard(totalActive: Int) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StatsSearchField(
     value: String,
-    onValueChange: (String) -> Unit
+    onValueChange: (String) -> Unit,
+    placeholder: String
 ) {
     OutlinedTextField(
         value = value,
@@ -287,7 +349,7 @@ fun StatsSearchField(
         modifier = Modifier.fillMaxWidth(),
         placeholder = {
             Text(
-                "Cari Matkul",
+                placeholder,
                 style = MaterialTheme.typography.bodyLarge,
                 fontSize = 16.sp,
                 color = UGNGold
@@ -536,7 +598,10 @@ fun StatsPaginationControls(
 @Composable
 fun StatsScreenPreview() {
     SiaMobileTheme {
-        StatsScreen()
+        StatsScreen(
+            type = "MATAKULIAH",
+            onBackClick = {}
+        )
     }
 }
 
