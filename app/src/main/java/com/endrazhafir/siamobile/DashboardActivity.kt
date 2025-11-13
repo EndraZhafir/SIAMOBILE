@@ -27,8 +27,11 @@ class DashboardActivity : ComponentActivity() {
             SiaMobileTheme {
                 DashboardScreen(
                     onLogoutClick = {
-                        Toast.makeText(this, "Logout clicked", Toast.LENGTH_SHORT).show()
-                        // Handle logout logic
+                        Toast.makeText(this, "Berhasil Logout", Toast.LENGTH_SHORT).show()
+                        val intent =Intent(this, LoginActivity::class.java)
+
+                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                        startActivity(intent)
                         finish()
                     },
                     onStudentClick = {

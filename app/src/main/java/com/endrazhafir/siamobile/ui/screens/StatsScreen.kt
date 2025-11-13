@@ -299,7 +299,7 @@ fun StatsTopBar(onBackClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(UGNGreenDark)
+            .background(UGNGreen)
             .statusBarsPadding()
             .padding(10.dp),
         verticalAlignment = Alignment.CenterVertically,
