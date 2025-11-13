@@ -1,21 +1,27 @@
 package com.endrazhafir.siamobile.ui.screens
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.endrazhafir.siamobile.R
@@ -40,13 +46,17 @@ fun StatsScreen(
     // Sample Data untuk Mata Kuliah
     val mataKuliahList = remember {
         mutableStateListOf(
-            MataKuliah(1, "Pemrograman Mobile", "IF-301", 3),
-            MataKuliah(2, "Basis Data Lanjut", "IF-302", 3),
-            MataKuliah(3, "Sistem Operasi", "IF-303", 3),
-            MataKuliah(4, "Jaringan Komputer", "IF-304", 4),
-            MataKuliah(5, "Kecerdasan Buatan", "IF-305", 3),
-            MataKuliah(6, "Negromancy", "NG-305", 3),
-            MataKuliah(7, "Ilmu Hitam", "IH-305", 3),
+            MataKuliah(1, "Pemrograman Mobile", "PM-301", 3),
+            MataKuliah(2, "Basis Data Lanjut", "BD-302", 3),
+            MataKuliah(3, "Sistem Operasi", "SO-303", 3),
+            MataKuliah(4, "Jaringan Komputer", "JK-304", 4),
+            MataKuliah(5, "Kecerdasan Buatan", "AI-123", 3),
+            MataKuliah(6, "Kecerdasan Alami", "AI-420", 3),
+            MataKuliah(7, "Kalkulus", "KK-376", 3),
+            MataKuliah(8, "Statistika", "ST-777", 3),
+            MataKuliah(9, "Bahasa Inggris", "EN-101", 3),
+            MataKuliah(10, "Ilmu Hitam", "IH-350", 3),
+            MataKuliah(11, "Negromancy", "NG-305", 3),
         )
     }
 
@@ -60,7 +70,7 @@ fun StatsScreen(
 
     var searchQuery by remember { mutableStateOf("") }
     var currentPage by remember { mutableStateOf(1) }
-    val itemsPerPage = 5
+    val itemsPerPage = 10
 
     val filteredList : List<Any> = remember(type, searchQuery, mahasiswaList, mataKuliahList, dosenList) {
         if (searchQuery.isEmpty()) {
@@ -159,6 +169,10 @@ fun StatsScreen(
         }
     }
 
+    // Handle state scroll table horizontal
+    val tableScrollState = rememberScrollState()
+    val tableWidth = 1000.dp
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -176,7 +190,7 @@ fun StatsScreen(
                 .padding(horizontal = 20.dp)
                 .navigationBarsPadding(),
             contentPadding = PaddingValues(vertical = 20.dp),
-            verticalArrangement = Arrangement.spacedBy(20.dp)
+            verticalArrangement = Arrangement.spacedBy(0.dp)
         ) {
             // Header dengan title dan tombol tambah
             item{
@@ -210,6 +224,8 @@ fun StatsScreen(
                 }
             }
 
+            item { Spacer( modifier = Modifier.height(20.dp)) }
+
             item {
                 // Statistics Card
                 StatsDetailCard(
@@ -219,6 +235,8 @@ fun StatsScreen(
                     iconResId = cardIconRes
                 )
             }
+
+            item { Spacer( modifier = Modifier.height(20.dp)) }
 
             item {
                 // Search Field
@@ -232,10 +250,17 @@ fun StatsScreen(
                 )
             }
 
+            item { Spacer (modifier = Modifier.height(20.dp)) }
+
             // Group table (header + rows)
             when (type) {
                 "MAHASISWA" -> {
-                    item { MahasiswaTableHeader() }
+                    item {
+                        MahasiswaTableHeader(
+                            scrollState = tableScrollState,
+                            width = tableWidth
+                        )
+                    }
                     itemsIndexed(paginatedList) { index, item ->
                         val data = item as Mahasiswa
                         val globalIndex = (currentPage - 1) * itemsPerPage + index + 1
@@ -244,13 +269,20 @@ fun StatsScreen(
                             number = globalIndex,
                             mahasiswa = data,
                             isLastItem = (index == paginatedList.lastIndex),
-                            onDeleteClick = { /*...*/ }
+                            onDeleteClick = { /*...*/ },
+                            scrollState = tableScrollState,
+                            width = tableWidth
                         )
                     }
                 }
 
                 "MATAKULIAH" -> {
-                    item { MataKuliahTableHeader() }
+                    item {
+                        MataKuliahTableHeader(
+                            scrollState = tableScrollState,
+                            width = tableWidth
+                        )
+                    }
                     itemsIndexed(paginatedList) { index, item ->
                         val data = item as MataKuliah
                         val globalIndex = (currentPage - 1) * itemsPerPage + index + 1
@@ -260,13 +292,20 @@ fun StatsScreen(
                             mataKuliah = data,
                             isLastItem = (index == paginatedList.lastIndex),
                             onEditClick = { /*...*/ },
-                            onDeleteClick = { /*...*/ }
+                            onDeleteClick = { /*...*/ },
+                            scrollState = tableScrollState,
+                            width = tableWidth
                         )
                     }
                 }
 
                 "DOSEN" -> {
-                    item { DosenTableHeader() }
+                    item {
+                        DosenTableHeader(
+                            scrollState = tableScrollState,
+                            width = tableWidth
+                        )
+                    }
                     itemsIndexed(paginatedList) { index, item ->
                         val data = item as Dosen
                         val globalIndex = (currentPage - 1) * itemsPerPage + index + 1
@@ -275,12 +314,16 @@ fun StatsScreen(
                             number = globalIndex,
                             dosen = data,
                             isLastItem = (index == paginatedList.lastIndex),
-                            onDeleteClick = { /*...*/ }
+                            onDeleteClick = { /*...*/ },
+                            scrollState = tableScrollState,
+                            width = tableWidth
                         )
                     }
                 }
             }
 
+            item { Spacer( modifier = Modifier.height(20.dp)) }
+            
             item {
                 // Pagination
                 StatsPaginationControls (
@@ -310,6 +353,7 @@ fun StatsTopBar(onBackClick: () -> Unit) {
             contentDescription = "Back",
             modifier = Modifier
                 .size(44.dp)
+                .clip(CircleShape)
                 .clickable { onBackClick() }
         )
 
@@ -441,212 +485,239 @@ fun StatsSearchField(
 }
 
 @Composable
-fun MahasiswaTableHeader() {
+fun MahasiswaTableHeader(
+    scrollState : ScrollState,
+    width : Dp
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(UGNGold, RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp))
-            .padding(8.dp)
+            .horizontalScroll(scrollState)
     ) {
-        Text(
-            text = "No",
-            style = MaterialTheme.typography.bodyLarge,
-            fontSize = 11.sp,
-            color = Color.White,
-            modifier = Modifier.weight(0.5f),
-            textAlign = TextAlign.Center
-        )
+        Row(
+            modifier = Modifier
+                .width(width)
+                .background(UGNGold, RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp))
+                .padding(8.dp)
+        ) {
+            Text(
+                text = "No",
+                style = MaterialTheme.typography.bodyLarge,
+                fontSize = 11.sp,
+                color = Color.White,
+                modifier = Modifier.weight(0.5f),
+                textAlign = TextAlign.Center
+            )
 
-        Text(
-            text = "Username",
-            style =MaterialTheme.typography.bodyLarge,
-            fontSize = 11.sp,
-            color = Color.White,
-            modifier = Modifier.weight(1.5f),
-            textAlign = TextAlign.Center
-        )
+            Text(
+                text = "Username",
+                style =MaterialTheme.typography.bodyLarge,
+                fontSize = 11.sp,
+                color = Color.White,
+                modifier = Modifier.weight(1.5f),
+                textAlign = TextAlign.Center
+            )
 
-        Text(
-            text = "Email",
-            style = MaterialTheme.typography.bodyLarge,
-            fontSize = 11.sp,
-            color = Color.White,
-            modifier = Modifier.weight(1f),
-            textAlign = TextAlign.Center
-        )
+            Text(
+                text = "Email",
+                style = MaterialTheme.typography.bodyLarge,
+                fontSize = 11.sp,
+                color = Color.White,
+                modifier = Modifier.weight(1f),
+                textAlign = TextAlign.Center
+            )
 
-        Text(
-            text = "Nama",
-            style = MaterialTheme.typography.bodyLarge,
-            fontSize = 11.sp,
-            color = Color.White,
-            modifier = Modifier.weight(0.7f),
-            textAlign = TextAlign.Center
-        )
+            Text(
+                text = "Nama",
+                style = MaterialTheme.typography.bodyLarge,
+                fontSize = 11.sp,
+                color = Color.White,
+                modifier = Modifier.weight(0.7f),
+                textAlign = TextAlign.Center
+            )
 
-        Text(
-            text = "NIM",
-            style = MaterialTheme.typography.bodyLarge,
-            fontSize = 11.sp,
-            color = Color.White,
-            modifier = Modifier.weight(1f),
-            textAlign = TextAlign.Center
-        )
+            Text(
+                text = "NIM",
+                style = MaterialTheme.typography.bodyLarge,
+                fontSize = 11.sp,
+                color = Color.White,
+                modifier = Modifier.weight(1f),
+                textAlign = TextAlign.Center
+            )
 
-        Text(
-            text = "Program",
-            style = MaterialTheme.typography.bodyLarge,
-            fontSize = 11.sp,
-            color = Color.White,
-            modifier = Modifier.weight(1f),
-            textAlign = TextAlign.Center
-        )
+            Text(
+                text = "Program",
+                style = MaterialTheme.typography.bodyLarge,
+                fontSize = 11.sp,
+                color = Color.White,
+                modifier = Modifier.weight(1f),
+                textAlign = TextAlign.Center
+            )
 
-        Text(
-            text = "Status",
-            style = MaterialTheme.typography.bodyLarge,
-            fontSize = 11.sp,
-            color = Color.White,
-            modifier = Modifier.weight(1f),
-            textAlign = TextAlign.Center
-        )
+            Text(
+                text = "Status",
+                style = MaterialTheme.typography.bodyLarge,
+                fontSize = 11.sp,
+                color = Color.White,
+                modifier = Modifier.weight(0.7f),
+                textAlign = TextAlign.Center
+            )
 
-        Text(
-            text = "Actions",
-            style = MaterialTheme.typography.bodyLarge,
-            fontSize = 11.sp,
-            color = Color.White,
-            modifier = Modifier.weight(1f),
-            textAlign = TextAlign.Center
-        )
+            Text(
+                text = "Actions",
+                style = MaterialTheme.typography.bodyLarge,
+                fontSize = 11.sp,
+                color = Color.White,
+                modifier = Modifier.weight(1f),
+                textAlign = TextAlign.Center
+            )
+        }
     }
 }
 
 @Composable
-fun MataKuliahTableHeader() {
+fun MataKuliahTableHeader(
+    scrollState : ScrollState,
+    width : Dp
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(UGNGold, RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp))
-            .padding(8.dp)
+            .horizontalScroll(scrollState)
     ) {
-        Text(
-            text = "No",
-            style = MaterialTheme.typography.bodyLarge,
-            fontSize = 11.sp,
-            color = Color.White,
-            modifier = Modifier.weight(0.5f),
-            textAlign = TextAlign.Center
-        )
+        Row(
+            modifier = Modifier
+                .width(width)
+                .background(UGNGold, RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp))
+                .padding(8.dp)
+        ) {
+            Text(
+                text = "No",
+                style = MaterialTheme.typography.bodyLarge,
+                fontSize = 11.sp,
+                color = Color.White,
+                modifier = Modifier.weight(0.5f),
+                textAlign = TextAlign.Center
+            )
 
-        Text(
-            text = "Nama Matkul",
-            style =MaterialTheme.typography.bodyLarge,
-            fontSize = 11.sp,
-            color = Color.White,
-            modifier = Modifier.weight(1.5f),
-            textAlign = TextAlign.Center
-        )
+            Text(
+                text = "Nama Matkul",
+                style =MaterialTheme.typography.bodyLarge,
+                fontSize = 11.sp,
+                color = Color.White,
+                modifier = Modifier.weight(1.5f),
+                textAlign = TextAlign.Center
+            )
 
-        Text(
-            text = "Kode MK",
-            style = MaterialTheme.typography.bodyLarge,
-            fontSize = 11.sp,
-            color = Color.White,
-            modifier = Modifier.weight(1f),
-            textAlign = TextAlign.Center
-        )
+            Text(
+                text = "Kode MK",
+                style = MaterialTheme.typography.bodyLarge,
+                fontSize = 11.sp,
+                color = Color.White,
+                modifier = Modifier.weight(1f),
+                textAlign = TextAlign.Center
+            )
 
-        Text(
-            text = "SKS",
-            style = MaterialTheme.typography.bodyLarge,
-            fontSize = 11.sp,
-            color = Color.White,
-            modifier = Modifier.weight(0.7f),
-            textAlign = TextAlign.Center
-        )
+            Text(
+                text = "SKS",
+                style = MaterialTheme.typography.bodyLarge,
+                fontSize = 11.sp,
+                color = Color.White,
+                modifier = Modifier.weight(0.7f),
+                textAlign = TextAlign.Center
+            )
 
-        Text(
-            text = "Actions",
-            style = MaterialTheme.typography.bodyLarge,
-            fontSize = 11.sp,
-            color = Color.White,
-            modifier = Modifier.weight(1f),
-            textAlign = TextAlign.Center
-        )
+            Text(
+                text = "Actions",
+                style = MaterialTheme.typography.bodyLarge,
+                fontSize = 11.sp,
+                color = Color.White,
+                modifier = Modifier.weight(1f),
+                textAlign = TextAlign.Center
+            )
+        }
     }
 }
 
 @Composable
-fun DosenTableHeader() {
+fun DosenTableHeader(
+    scrollState : ScrollState,
+    width : Dp
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(UGNGold, RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp))
-            .padding(8.dp)
+            .horizontalScroll(scrollState)
     ) {
-        Text(
-            text = "No",
-            style = MaterialTheme.typography.bodyLarge,
-            fontSize = 11.sp,
-            color = Color.White,
-            modifier = Modifier.weight(0.5f),
-            textAlign = TextAlign.Center
-        )
+        Row(
+            modifier = Modifier
+                .width(width)
+                .background(UGNGold, RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp))
+                .padding(8.dp)
+        ) {
+            Text(
+                text = "No",
+                style = MaterialTheme.typography.bodyLarge,
+                fontSize = 11.sp,
+                color = Color.White,
+                modifier = Modifier.weight(0.5f),
+                textAlign = TextAlign.Center
+            )
 
-        Text(
-            text = "Username",
-            style =MaterialTheme.typography.bodyLarge,
-            fontSize = 11.sp,
-            color = Color.White,
-            modifier = Modifier.weight(1.5f),
-            textAlign = TextAlign.Center
-        )
+            Text(
+                text = "Username",
+                style = MaterialTheme.typography.bodyLarge,
+                fontSize = 11.sp,
+                color = Color.White,
+                modifier = Modifier.weight(1.5f),
+                textAlign = TextAlign.Center
+            )
 
-        Text(
-            text = "Email",
-            style = MaterialTheme.typography.bodyLarge,
-            fontSize = 11.sp,
-            color = Color.White,
-            modifier = Modifier.weight(1f),
-            textAlign = TextAlign.Center
-        )
+            Text(
+                text = "Email",
+                style = MaterialTheme.typography.bodyLarge,
+                fontSize = 11.sp,
+                color = Color.White,
+                modifier = Modifier.weight(1f),
+                textAlign = TextAlign.Center
+            )
 
-        Text(
-            text = "Nama",
-            style = MaterialTheme.typography.bodyLarge,
-            fontSize = 11.sp,
-            color = Color.White,
-            modifier = Modifier.weight(0.7f),
-            textAlign = TextAlign.Center
-        )
+            Text(
+                text = "Nama",
+                style = MaterialTheme.typography.bodyLarge,
+                fontSize = 11.sp,
+                color = Color.White,
+                modifier = Modifier.weight(0.7f),
+                textAlign = TextAlign.Center
+            )
 
-        Text(
-            text = "Program",
-            style = MaterialTheme.typography.bodyLarge,
-            fontSize = 11.sp,
-            color = Color.White,
-            modifier = Modifier.weight(1f),
-            textAlign = TextAlign.Center
-        )
+            Text(
+                text = "Program",
+                style = MaterialTheme.typography.bodyLarge,
+                fontSize = 11.sp,
+                color = Color.White,
+                modifier = Modifier.weight(1f),
+                textAlign = TextAlign.Center
+            )
 
-        Text(
-            text = "Status",
-            style = MaterialTheme.typography.bodyLarge,
-            fontSize = 11.sp,
-            color = Color.White,
-            modifier = Modifier.weight(1f),
-            textAlign = TextAlign.Center
-        )
+            Text(
+                text = "Status",
+                style = MaterialTheme.typography.bodyLarge,
+                fontSize = 11.sp,
+                color = Color.White,
+                modifier = Modifier.weight(0.7f),
+                textAlign = TextAlign.Center
+            )
 
-        Text(
-            text = "Actions",
-            style = MaterialTheme.typography.bodyLarge,
-            fontSize = 11.sp,
-            color = Color.White,
-            modifier = Modifier.weight(1f),
-            textAlign = TextAlign.Center
-        )
+            Text(
+                text = "Actions",
+                style = MaterialTheme.typography.bodyLarge,
+                fontSize = 11.sp,
+                color = Color.White,
+                modifier = Modifier.weight(1f),
+                textAlign = TextAlign.Center
+            )
+        }
     }
 }
 
@@ -655,7 +726,9 @@ fun MahasiswaTableRow(
     number: Int,
     mahasiswa: Mahasiswa,
     isLastItem: Boolean,
-    onDeleteClick: () -> Unit
+    onDeleteClick: () -> Unit,
+    scrollState: ScrollState,
+    width: Dp
 ) {
     val rowShape = if (isLastItem) {
         RoundedCornerShape(bottomStart = 8.dp, bottomEnd = 8.dp)
@@ -666,97 +739,115 @@ fun MahasiswaTableRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(UGNLightGold, shape = rowShape)
-            .padding(8.dp),
-        verticalAlignment = Alignment.CenterVertically
+            .horizontalScroll(scrollState)
     ) {
-        Text(
-            text = number.toString(),
-            style = MaterialTheme.typography.bodyLarge,
-            fontSize = 11.sp,
-            color = Black,
-            modifier = Modifier.weight(0.5f),
-            textAlign = TextAlign.Center
-        )
-        Text(
-            text = mahasiswa.username,
-            style = MaterialTheme.typography.bodyLarge,
-            fontSize = 11.sp,
-            color = Black,
-            modifier = Modifier
-                .weight(1.5f)
-                .padding(horizontal = 8.dp),
-        )
-
-        Text(
-            text = mahasiswa.email,
-            style = MaterialTheme.typography.bodyLarge,
-            fontSize = 11.sp,
-            color = Black,
-            modifier = Modifier
-                .weight(1.5f)
-                .padding(horizontal = 8.dp),
-        )
-
-        Text(
-            text = mahasiswa.nama,
-            style = MaterialTheme.typography.bodyLarge,
-            fontSize = 11.sp,
-            color = Black,
-            modifier = Modifier
-                .weight(1.5f)
-                .padding(horizontal = 8.dp),
-        )
-
-        Text(
-            text = mahasiswa.nim,
-            style = MaterialTheme.typography.bodyLarge,
-            fontSize = 11.sp,
-            color = Black,
-            modifier = Modifier.weight(1f),
-            textAlign = TextAlign.Center
-        )
-
-        Text(
-            text = mahasiswa.program,
-            style = MaterialTheme.typography.bodyLarge,
-            fontSize = 11.sp,
-            color = Black,
-            modifier = Modifier
-                .weight(1.5f)
-                .padding(horizontal = 8.dp),
-        )
-
-        Box(
-            modifier = Modifier.weight(0.7f),
-            contentAlignment = Alignment.Center
-        ) {
-            // Status Aktif/Non-Aktif
-            Text(
-                text = mahasiswa.status,
-                style = MaterialTheme.typography.labelSmall,
-                fontSize = 11.sp,
-                color = Color.White,
+        Column(modifier = Modifier.width(width)) {
+            Row(
                 modifier = Modifier
-                    .background(UGNGreen, RoundedCornerShape(8.dp))
-                    .padding(horizontal = 8.dp, vertical = 4.dp)
-            )
-        }
-
-        Row(
-            modifier = Modifier.weight(1f),
-            horizontalArrangement = Arrangement.Center
-        ) {
-            // Active/Deactivate Button
-            IconButton(
-                onClick = onDeleteClick,
-                modifier = Modifier.size(32.dp)
+                    .fillMaxWidth()
+                    .background(UGNLightGold, shape = rowShape)
+                    .padding(8.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_delete),
-                    contentDescription = "Delete",
-                    tint = Color.Red,
-                    modifier = Modifier.size(20.dp)
+                Text(
+                    text = number.toString(),
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontSize = 11.sp,
+                    color = Black,
+                    modifier = Modifier.weight(0.5f),
+                    textAlign = TextAlign.Center
+                )
+                Text(
+                    text = mahasiswa.username,
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontSize = 11.sp,
+                    color = Black,
+                    modifier = Modifier
+                        .weight(1.5f)
+                        .padding(horizontal = 8.dp),
+                    textAlign = TextAlign.Start
+                )
+
+                Text(
+                    text = mahasiswa.email,
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontSize = 11.sp,
+                    color = Black,
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(horizontal = 8.dp),
+                    textAlign = TextAlign.Start
+                )
+
+                Text(
+                    text = mahasiswa.nama,
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontSize = 11.sp,
+                    color = Black,
+                    modifier = Modifier
+                        .weight(0.7f)
+                        .padding(horizontal = 8.dp),
+                    textAlign = TextAlign.Start
+                )
+
+                Text(
+                    text = mahasiswa.nim,
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontSize = 11.sp,
+                    color = Black,
+                    modifier = Modifier.weight(1f),
+                    textAlign = TextAlign.Center
+                )
+
+                Text(
+                    text = mahasiswa.program,
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontSize = 11.sp,
+                    color = Black,
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(horizontal = 8.dp)
+                )
+
+                Box(
+                    modifier = Modifier.weight(0.7f),
+                    contentAlignment = Alignment.Center
+                ) {
+                    // Status Aktif/Non-Aktif
+                    Text(
+                        text = mahasiswa.status,
+                        style = MaterialTheme.typography.labelSmall,
+                        fontSize = 11.sp,
+                        color = Color.White,
+                        modifier = Modifier
+                            .background(UGNGreen, RoundedCornerShape(8.dp))
+                            .padding(horizontal = 8.dp, vertical = 4.dp)
+                    )
+                }
+
+                Row(
+                    modifier = Modifier.weight(1f),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    // Active/Deactivate Button
+                    IconButton(
+                        onClick = onDeleteClick,
+                        modifier = Modifier.size(32.dp)
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_delete),
+                            contentDescription = "Delete",
+                            tint = Color.Red,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                }
+            }
+
+            if (!isLastItem) {
+                HorizontalDivider(
+                    color = UGNGold,
+                    thickness = 1.dp,
                 )
             }
         }
@@ -769,7 +860,9 @@ fun MataKuliahTableRow(
     mataKuliah: MataKuliah,
     isLastItem: Boolean,
     onEditClick: () -> Unit,
-    onDeleteClick: () -> Unit
+    onDeleteClick: () -> Unit,
+    scrollState: ScrollState,
+    width: Dp
 ) {
     val rowShape = if (isLastItem) {
         RoundedCornerShape(bottomStart = 8.dp, bottomEnd = 8.dp)
@@ -780,78 +873,93 @@ fun MataKuliahTableRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(UGNLightGold, shape = rowShape)
-            .padding(8.dp),
-        verticalAlignment = Alignment.CenterVertically
+            .horizontalScroll(scrollState)
     ) {
-        Text(
-            text = number.toString(),
-            style = MaterialTheme.typography.bodyLarge,
-            fontSize = 11.sp,
-            color = Black,
-            modifier = Modifier.weight(0.5f),
-            textAlign = TextAlign.Center
-        )
-        Text(
-            text = mataKuliah.nama,
-            style = MaterialTheme.typography.bodyLarge,
-            fontSize = 11.sp,
-            color = Black,
-            modifier = Modifier
-                .weight(1.5f)
-                .padding(horizontal = 8.dp),
-        )
-        Text(
-            text = mataKuliah.kode,
-            style = MaterialTheme.typography.bodyLarge,
-            fontSize = 11.sp,
-            color = Black,
-            modifier = Modifier.weight(1f),
-            textAlign = TextAlign.Center
-        )
-
-        Box(
-            modifier = Modifier.weight(0.7f),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = "${mataKuliah.sks} SKS",
-                style = MaterialTheme.typography.labelSmall,
-                fontSize = 11.sp,
-                color = Color.White,
+        Column(modifier = Modifier.width(width)) {
+            Row(
                 modifier = Modifier
-                    .background(UGNGreen, RoundedCornerShape(8.dp))
-                    .padding(horizontal = 8.dp, vertical = 4.dp)
-            )
-        }
-
-        Row(
-            modifier = Modifier.weight(1f),
-            horizontalArrangement = Arrangement.Center
-        ) {
-            // Edit Button
-            IconButton(
-                onClick = onEditClick,
-                modifier = Modifier.size(32.dp)
+                    .fillMaxWidth()
+                    .background(UGNLightGold, shape = rowShape)
+                    .padding(8.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_edit),
-                    contentDescription = "Edit",
-                    tint = UGNGold,
-                    modifier = Modifier.size(20.dp)
+                Text(
+                    text = number.toString(),
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontSize = 11.sp,
+                    color = Black,
+                    modifier = Modifier.weight(0.5f),
+                    textAlign = TextAlign.Center
                 )
+                Text(
+                    text = mataKuliah.nama,
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontSize = 11.sp,
+                    color = Black,
+                    modifier = Modifier
+                        .weight(1.5f)
+                        .padding(horizontal = 8.dp),
+                )
+                Text(
+                    text = mataKuliah.kode,
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontSize = 11.sp,
+                    color = Black,
+                    modifier = Modifier.weight(1f),
+                    textAlign = TextAlign.Center
+                )
+
+                Box(
+                    modifier = Modifier.weight(0.7f),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "${mataKuliah.sks} SKS",
+                        style = MaterialTheme.typography.labelSmall,
+                        fontSize = 11.sp,
+                        color = Color.White,
+                        modifier = Modifier
+                            .background(UGNGreen, RoundedCornerShape(8.dp))
+                            .padding(horizontal = 8.dp, vertical = 4.dp)
+                    )
+                }
+
+                Row(
+                    modifier = Modifier.weight(1f),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    // Edit Button
+                    IconButton(
+                        onClick = onEditClick,
+                        modifier = Modifier.size(32.dp)
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_edit),
+                            contentDescription = "Edit",
+                            tint = UGNGold,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+
+                    // Delete Button
+                    IconButton(
+                        onClick = onDeleteClick,
+                        modifier = Modifier.size(32.dp)
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_delete),
+                            contentDescription = "Delete",
+                            tint = Color.Red,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                }
             }
 
-            // Delete Button
-            IconButton(
-                onClick = onDeleteClick,
-                modifier = Modifier.size(32.dp)
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_delete),
-                    contentDescription = "Delete",
-                    tint = Color.Red,
-                    modifier = Modifier.size(20.dp)
+            if (!isLastItem) {
+                HorizontalDivider(
+                    color = UGNGold,
+                    thickness = 1.dp,
                 )
             }
         }
@@ -863,7 +971,9 @@ fun DosenTableRow(
     number: Int,
     dosen: Dosen,
     isLastItem: Boolean,
-    onDeleteClick: () -> Unit
+    onDeleteClick: () -> Unit,
+    scrollState: ScrollState,
+    width: Dp
 ) {
     val rowShape = if (isLastItem) {
         RoundedCornerShape(bottomStart = 8.dp, bottomEnd = 8.dp)
@@ -874,88 +984,107 @@ fun DosenTableRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(UGNLightGold, shape = rowShape)
-            .padding(8.dp),
-        verticalAlignment = Alignment.CenterVertically
+            .horizontalScroll(scrollState)
     ) {
-        Text(
-            text = number.toString(),
-            style = MaterialTheme.typography.bodyLarge,
-            fontSize = 11.sp,
-            color = Black,
-            modifier = Modifier.weight(0.5f),
-            textAlign = TextAlign.Center
-        )
-        Text(
-            text = dosen.username,
-            style = MaterialTheme.typography.bodyLarge,
-            fontSize = 11.sp,
-            color = Black,
-            modifier = Modifier
-                .weight(1.5f)
-                .padding(horizontal = 8.dp),
-        )
-
-        Text(
-            text = dosen.email,
-            style = MaterialTheme.typography.bodyLarge,
-            fontSize = 11.sp,
-            color = Black,
-            modifier = Modifier
-                .weight(1.5f)
-                .padding(horizontal = 8.dp),
-        )
-
-        Text(
-            text = dosen.nama,
-            style = MaterialTheme.typography.bodyLarge,
-            fontSize = 11.sp,
-            color = Black,
-            modifier = Modifier
-                .weight(1.5f)
-                .padding(horizontal = 8.dp),
-        )
-
-        Text(
-            text = dosen.program,
-            style = MaterialTheme.typography.bodyLarge,
-            fontSize = 11.sp,
-            color = Black,
-            modifier = Modifier
-                .weight(1.5f)
-                .padding(horizontal = 8.dp),
-        )
-
-        Box(
-            modifier = Modifier.weight(0.7f),
-            contentAlignment = Alignment.Center
-        ) {
-            // Status Aktif/Non-Aktif
-            Text(
-                text = dosen.status,
-                style = MaterialTheme.typography.labelSmall,
-                fontSize = 11.sp,
-                color = Color.White,
+        Column(modifier = Modifier.width(width)) {
+            Row(
                 modifier = Modifier
-                    .background(UGNGreen, RoundedCornerShape(8.dp))
-                    .padding(horizontal = 8.dp, vertical = 4.dp)
-            )
-        }
-
-        Row(
-            modifier = Modifier.weight(1f),
-            horizontalArrangement = Arrangement.Center
-        ) {
-            // Active/Deactivate Button
-            IconButton(
-                onClick = onDeleteClick,
-                modifier = Modifier.size(32.dp)
+                    .fillMaxWidth()
+                    .background(UGNLightGold, shape = rowShape)
+                    .padding(8.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_delete),
-                    contentDescription = "Delete",
-                    tint = Color.Red,
-                    modifier = Modifier.size(20.dp)
+                Text(
+                    text = number.toString(),
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontSize = 11.sp,
+                    color = Black,
+                    modifier = Modifier.weight(0.5f),
+                    textAlign = TextAlign.Center
+                )
+                Text(
+                    text = dosen.username,
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontSize = 11.sp,
+                    color = Black,
+                    modifier = Modifier
+                        .weight(1.5f)
+                        .padding(horizontal = 8.dp),
+                    textAlign = TextAlign.Start
+                )
+
+                Text(
+                    text = dosen.email,
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontSize = 11.sp,
+                    color = Black,
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(horizontal = 8.dp),
+                    textAlign = TextAlign.Start
+                )
+
+                Text(
+                    text = dosen.nama,
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontSize = 11.sp,
+                    color = Black,
+                    modifier = Modifier
+                        .weight(0.7f)
+                        .padding(horizontal = 8.dp),
+                    textAlign = TextAlign.Start
+                )
+
+                Text(
+                    text = dosen.program,
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontSize = 11.sp,
+                    color = Black,
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(horizontal = 8.dp),
+                    textAlign = TextAlign.Center
+                )
+
+                Box(
+                    modifier = Modifier.weight(0.7f),
+                    contentAlignment = Alignment.Center
+                ) {
+                    // Status Aktif/Non-Aktif
+                    Text(
+                        text = dosen.status,
+                        style = MaterialTheme.typography.labelSmall,
+                        fontSize = 11.sp,
+                        color = Color.White,
+                        modifier = Modifier
+                            .background(UGNGreen, RoundedCornerShape(8.dp))
+                            .padding(horizontal = 8.dp, vertical = 4.dp)
+                    )
+                }
+
+                Row(
+                    modifier = Modifier.weight(1f),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    // Active/Deactivate Button
+                    IconButton(
+                        onClick = onDeleteClick,
+                        modifier = Modifier.size(32.dp)
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_delete),
+                            contentDescription = "Delete",
+                            tint = Color.Red,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                }
+            }
+
+            if (!isLastItem) {
+                HorizontalDivider(
+                    color = UGNGold,
+                    thickness = 1.dp,
                 )
             }
         }
