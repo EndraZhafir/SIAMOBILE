@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -18,7 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.endrazhafir.siamobile.R
-import com.endrazhafir.siamobile.data.MataKuliah
+import com.endrazhafir.siamobile.data.*
 import com.endrazhafir.siamobile.ui.theme.*
 
 @Composable
@@ -26,7 +27,17 @@ fun StatsScreen(
     type: String,
     onBackClick: () -> Unit = {}
 ) {
-    // Contoh sample data
+
+    // Sample Data untuk Mahasiswa
+    val mahasiswaList = remember {
+        mutableStateListOf(
+            Mahasiswa(1, "literally_me", "ryangosling@gmail.com", "Ryan Gosling", "24/538769/SV/24535", "Software Engineer", "Aktif"),
+            Mahasiswa(2, "dark_passenger", "dextermorgan@gmail.com", "Dexter Morgan", "24/123456/SV/12345", "Software Engineer", "Aktif"),
+            Mahasiswa(3, "gatau_deh", "email@gmail.com", "Anonim", "Tes Nim", "Prodi Ghaib", "Aktif"),
+        )
+    }
+
+    // Sample Data untuk Mata Kuliah
     val mataKuliahList = remember {
         mutableStateListOf(
             MataKuliah(1, "Pemrograman Mobile", "IF-301", 3),
@@ -39,18 +50,48 @@ fun StatsScreen(
         )
     }
 
+    // Sample Data untuk Dosen
+    val dosenList = remember {
+        mutableStateListOf(
+            Dosen(1, "prfsr_grhm", "professorgraham@gmail.com", "Will Graham", "Criminology", "Aktif"),
+            Dosen(2, "dr_lecter", "hanniballecter@gmail.com", "Hannibal Lecter", "Psychology", "Non-Aktif"),
+        )
+    }
+
     var searchQuery by remember { mutableStateOf("") }
     var currentPage by remember { mutableStateOf(1) }
-    val itemsPerPage = 10
+    val itemsPerPage = 5
 
-    val filteredList = remember(searchQuery, mataKuliahList) {
+    val filteredList : List<Any> = remember(type, searchQuery, mahasiswaList, mataKuliahList, dosenList) {
         if (searchQuery.isEmpty()) {
-            mataKuliahList
-        } else {
-            mataKuliahList.filter {
-                it.nama.contains(searchQuery, ignoreCase = true) ||
-                it.kode.contains(searchQuery, ignoreCase = true)
+            when (type) {
+                "MAHASISWA" -> mahasiswaList
+                "MATAKULIAH" -> mataKuliahList
+                "DOSEN" -> dosenList
+                else -> emptyList()
             }
+        } else {
+            when (type) {
+                "MAHASISWA" -> mahasiswaList.filter {
+                    it.nama.contains(searchQuery, ignoreCase = true) || it.nim.contains(searchQuery, ignoreCase = true)
+                }
+                "MATAKULIAH" -> mataKuliahList.filter {
+                    it.nama.contains(searchQuery, ignoreCase = true) || it.kode.contains(searchQuery, ignoreCase = true)
+                }
+                "DOSEN" -> dosenList.filter {
+                    it.nama.contains(searchQuery, ignoreCase = true) || it.username.contains(searchQuery, ignoreCase = true)
+                }
+                else -> emptyList()
+            }
+        }
+    }
+
+    val totalActiveData = remember(type, mahasiswaList, mataKuliahList, dosenList) {
+        when (type) {
+            "MAHASISWA" -> mahasiswaList.size
+            "MATAKULIAH" -> mataKuliahList.size
+            "DOSEN" -> dosenList.size
+            else -> 0
         }
     }
 
@@ -172,7 +213,7 @@ fun StatsScreen(
             item {
                 // Statistics Card
                 StatsDetailCard(
-                    totalActive = mataKuliahList.size,
+                    totalActive = totalActiveData,
                     title = cardTitle,
                     subtitle = cardSubtitle,
                     iconResId = cardIconRes
@@ -192,24 +233,49 @@ fun StatsScreen(
             }
 
             // Group table (header + rows)
-            item {
-                Column{
-                    // Table Header
-                    StatsTableHeader()
-
-                    paginatedList.forEachIndexed { index, mataKuliah ->
+            when (type) {
+                "MAHASISWA" -> {
+                    item { MahasiswaTableHeader() }
+                    itemsIndexed(paginatedList) { index, item ->
+                        val data = item as Mahasiswa
                         val globalIndex = (currentPage - 1) * itemsPerPage + index + 1
 
-                        val isLastItem = (index == paginatedList.lastIndex)
-
-                        StatsTableRow(
+                        MahasiswaTableRow(
                             number = globalIndex,
-                            mataKuliah = mataKuliah,
-                            isLastItem = isLastItem,
-                            onEditClick = { /* Handle edit */ },
-                            onDeleteClick = {
-                                mataKuliahList.remove(mataKuliah)
-                            }
+                            mahasiswa = data,
+                            isLastItem = (index == paginatedList.lastIndex),
+                            onDeleteClick = { /*...*/ }
+                        )
+                    }
+                }
+
+                "MATAKULIAH" -> {
+                    item { MataKuliahTableHeader() }
+                    itemsIndexed(paginatedList) { index, item ->
+                        val data = item as MataKuliah
+                        val globalIndex = (currentPage - 1) * itemsPerPage + index + 1
+
+                        MataKuliahTableRow(
+                            number = globalIndex,
+                            mataKuliah = data,
+                            isLastItem = (index == paginatedList.lastIndex),
+                            onEditClick = { /*...*/ },
+                            onDeleteClick = { /*...*/ }
+                        )
+                    }
+                }
+
+                "DOSEN" -> {
+                    item { DosenTableHeader() }
+                    itemsIndexed(paginatedList) { index, item ->
+                        val data = item as Dosen
+                        val globalIndex = (currentPage - 1) * itemsPerPage + index + 1
+
+                        DosenTableRow(
+                            number = globalIndex,
+                            dosen = data,
+                            isLastItem = (index == paginatedList.lastIndex),
+                            onDeleteClick = { /*...*/ }
                         )
                     }
                 }
@@ -375,7 +441,89 @@ fun StatsSearchField(
 }
 
 @Composable
-fun StatsTableHeader() {
+fun MahasiswaTableHeader() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(UGNGold, RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp))
+            .padding(8.dp)
+    ) {
+        Text(
+            text = "No",
+            style = MaterialTheme.typography.bodyLarge,
+            fontSize = 11.sp,
+            color = Color.White,
+            modifier = Modifier.weight(0.5f),
+            textAlign = TextAlign.Center
+        )
+
+        Text(
+            text = "Username",
+            style =MaterialTheme.typography.bodyLarge,
+            fontSize = 11.sp,
+            color = Color.White,
+            modifier = Modifier.weight(1.5f),
+            textAlign = TextAlign.Center
+        )
+
+        Text(
+            text = "Email",
+            style = MaterialTheme.typography.bodyLarge,
+            fontSize = 11.sp,
+            color = Color.White,
+            modifier = Modifier.weight(1f),
+            textAlign = TextAlign.Center
+        )
+
+        Text(
+            text = "Nama",
+            style = MaterialTheme.typography.bodyLarge,
+            fontSize = 11.sp,
+            color = Color.White,
+            modifier = Modifier.weight(0.7f),
+            textAlign = TextAlign.Center
+        )
+
+        Text(
+            text = "NIM",
+            style = MaterialTheme.typography.bodyLarge,
+            fontSize = 11.sp,
+            color = Color.White,
+            modifier = Modifier.weight(1f),
+            textAlign = TextAlign.Center
+        )
+
+        Text(
+            text = "Program",
+            style = MaterialTheme.typography.bodyLarge,
+            fontSize = 11.sp,
+            color = Color.White,
+            modifier = Modifier.weight(1f),
+            textAlign = TextAlign.Center
+        )
+
+        Text(
+            text = "Status",
+            style = MaterialTheme.typography.bodyLarge,
+            fontSize = 11.sp,
+            color = Color.White,
+            modifier = Modifier.weight(1f),
+            textAlign = TextAlign.Center
+        )
+
+        Text(
+            text = "Actions",
+            style = MaterialTheme.typography.bodyLarge,
+            fontSize = 11.sp,
+            color = Color.White,
+            modifier = Modifier.weight(1f),
+            textAlign = TextAlign.Center
+        )
+    }
+}
+
+@Composable
+fun MataKuliahTableHeader() {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -430,7 +578,193 @@ fun StatsTableHeader() {
 }
 
 @Composable
-fun StatsTableRow(
+fun DosenTableHeader() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(UGNGold, RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp))
+            .padding(8.dp)
+    ) {
+        Text(
+            text = "No",
+            style = MaterialTheme.typography.bodyLarge,
+            fontSize = 11.sp,
+            color = Color.White,
+            modifier = Modifier.weight(0.5f),
+            textAlign = TextAlign.Center
+        )
+
+        Text(
+            text = "Username",
+            style =MaterialTheme.typography.bodyLarge,
+            fontSize = 11.sp,
+            color = Color.White,
+            modifier = Modifier.weight(1.5f),
+            textAlign = TextAlign.Center
+        )
+
+        Text(
+            text = "Email",
+            style = MaterialTheme.typography.bodyLarge,
+            fontSize = 11.sp,
+            color = Color.White,
+            modifier = Modifier.weight(1f),
+            textAlign = TextAlign.Center
+        )
+
+        Text(
+            text = "Nama",
+            style = MaterialTheme.typography.bodyLarge,
+            fontSize = 11.sp,
+            color = Color.White,
+            modifier = Modifier.weight(0.7f),
+            textAlign = TextAlign.Center
+        )
+
+        Text(
+            text = "Program",
+            style = MaterialTheme.typography.bodyLarge,
+            fontSize = 11.sp,
+            color = Color.White,
+            modifier = Modifier.weight(1f),
+            textAlign = TextAlign.Center
+        )
+
+        Text(
+            text = "Status",
+            style = MaterialTheme.typography.bodyLarge,
+            fontSize = 11.sp,
+            color = Color.White,
+            modifier = Modifier.weight(1f),
+            textAlign = TextAlign.Center
+        )
+
+        Text(
+            text = "Actions",
+            style = MaterialTheme.typography.bodyLarge,
+            fontSize = 11.sp,
+            color = Color.White,
+            modifier = Modifier.weight(1f),
+            textAlign = TextAlign.Center
+        )
+    }
+}
+
+@Composable
+fun MahasiswaTableRow(
+    number: Int,
+    mahasiswa: Mahasiswa,
+    isLastItem: Boolean,
+    onDeleteClick: () -> Unit
+) {
+    val rowShape = if (isLastItem) {
+        RoundedCornerShape(bottomStart = 8.dp, bottomEnd = 8.dp)
+    } else {
+        androidx.compose.ui.graphics.RectangleShape
+    }
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(UGNLightGold, shape = rowShape)
+            .padding(8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = number.toString(),
+            style = MaterialTheme.typography.bodyLarge,
+            fontSize = 11.sp,
+            color = Black,
+            modifier = Modifier.weight(0.5f),
+            textAlign = TextAlign.Center
+        )
+        Text(
+            text = mahasiswa.username,
+            style = MaterialTheme.typography.bodyLarge,
+            fontSize = 11.sp,
+            color = Black,
+            modifier = Modifier
+                .weight(1.5f)
+                .padding(horizontal = 8.dp),
+        )
+
+        Text(
+            text = mahasiswa.email,
+            style = MaterialTheme.typography.bodyLarge,
+            fontSize = 11.sp,
+            color = Black,
+            modifier = Modifier
+                .weight(1.5f)
+                .padding(horizontal = 8.dp),
+        )
+
+        Text(
+            text = mahasiswa.nama,
+            style = MaterialTheme.typography.bodyLarge,
+            fontSize = 11.sp,
+            color = Black,
+            modifier = Modifier
+                .weight(1.5f)
+                .padding(horizontal = 8.dp),
+        )
+
+        Text(
+            text = mahasiswa.nim,
+            style = MaterialTheme.typography.bodyLarge,
+            fontSize = 11.sp,
+            color = Black,
+            modifier = Modifier.weight(1f),
+            textAlign = TextAlign.Center
+        )
+
+        Text(
+            text = mahasiswa.program,
+            style = MaterialTheme.typography.bodyLarge,
+            fontSize = 11.sp,
+            color = Black,
+            modifier = Modifier
+                .weight(1.5f)
+                .padding(horizontal = 8.dp),
+        )
+
+        Box(
+            modifier = Modifier.weight(0.7f),
+            contentAlignment = Alignment.Center
+        ) {
+            // Status Aktif/Non-Aktif
+            Text(
+                text = "${mahasiswa.status}",
+                style = MaterialTheme.typography.labelSmall,
+                fontSize = 11.sp,
+                color = Color.White,
+                modifier = Modifier
+                    .background(UGNGreen, RoundedCornerShape(8.dp))
+                    .padding(horizontal = 8.dp, vertical = 4.dp)
+            )
+        }
+
+        Row(
+            modifier = Modifier.weight(1f),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            // Active/Deactivate Button
+            IconButton(
+                onClick = onDeleteClick,
+                modifier = Modifier.size(32.dp)
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_delete),
+                    contentDescription = "Delete",
+                    tint = Color.Red,
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun MataKuliahTableRow(
     number: Int,
     mataKuliah: MataKuliah,
     isLastItem: Boolean,
@@ -509,6 +843,110 @@ fun StatsTableRow(
             }
 
             // Delete Button
+            IconButton(
+                onClick = onDeleteClick,
+                modifier = Modifier.size(32.dp)
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_delete),
+                    contentDescription = "Delete",
+                    tint = Color.Red,
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun DosenTableRow(
+    number: Int,
+    dosen: Dosen,
+    isLastItem: Boolean,
+    onDeleteClick: () -> Unit
+) {
+    val rowShape = if (isLastItem) {
+        RoundedCornerShape(bottomStart = 8.dp, bottomEnd = 8.dp)
+    } else {
+        androidx.compose.ui.graphics.RectangleShape
+    }
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(UGNLightGold, shape = rowShape)
+            .padding(8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = number.toString(),
+            style = MaterialTheme.typography.bodyLarge,
+            fontSize = 11.sp,
+            color = Black,
+            modifier = Modifier.weight(0.5f),
+            textAlign = TextAlign.Center
+        )
+        Text(
+            text = dosen.username,
+            style = MaterialTheme.typography.bodyLarge,
+            fontSize = 11.sp,
+            color = Black,
+            modifier = Modifier
+                .weight(1.5f)
+                .padding(horizontal = 8.dp),
+        )
+
+        Text(
+            text = dosen.email,
+            style = MaterialTheme.typography.bodyLarge,
+            fontSize = 11.sp,
+            color = Black,
+            modifier = Modifier
+                .weight(1.5f)
+                .padding(horizontal = 8.dp),
+        )
+
+        Text(
+            text = dosen.nama,
+            style = MaterialTheme.typography.bodyLarge,
+            fontSize = 11.sp,
+            color = Black,
+            modifier = Modifier
+                .weight(1.5f)
+                .padding(horizontal = 8.dp),
+        )
+
+        Text(
+            text = dosen.program,
+            style = MaterialTheme.typography.bodyLarge,
+            fontSize = 11.sp,
+            color = Black,
+            modifier = Modifier
+                .weight(1.5f)
+                .padding(horizontal = 8.dp),
+        )
+
+        Box(
+            modifier = Modifier.weight(0.7f),
+            contentAlignment = Alignment.Center
+        ) {
+            // Status Aktif/Non-Aktif
+            Text(
+                text = "${dosen.status}",
+                style = MaterialTheme.typography.labelSmall,
+                fontSize = 11.sp,
+                color = Color.White,
+                modifier = Modifier
+                    .background(UGNGreen, RoundedCornerShape(8.dp))
+                    .padding(horizontal = 8.dp, vertical = 4.dp)
+            )
+        }
+
+        Row(
+            modifier = Modifier.weight(1f),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            // Active/Deactivate Button
             IconButton(
                 onClick = onDeleteClick,
                 modifier = Modifier.size(32.dp)
