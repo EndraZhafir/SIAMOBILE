@@ -733,7 +733,7 @@ fun MahasiswaTableRow(
         ) {
             // Status Aktif/Non-Aktif
             Text(
-                text = "${mahasiswa.status}",
+                text = mahasiswa.status,
                 style = MaterialTheme.typography.labelSmall,
                 fontSize = 11.sp,
                 color = Color.White,
@@ -932,7 +932,7 @@ fun DosenTableRow(
         ) {
             // Status Aktif/Non-Aktif
             Text(
-                text = "${dosen.status}",
+                text = dosen.status,
                 style = MaterialTheme.typography.labelSmall,
                 fontSize = 11.sp,
                 color = Color.White,
