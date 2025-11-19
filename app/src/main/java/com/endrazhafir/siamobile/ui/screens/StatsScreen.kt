@@ -26,8 +26,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.endrazhafir.siamobile.R
 import com.endrazhafir.siamobile.data.*
+import com.endrazhafir.siamobile.ui.components.AddDosenContent
+import com.endrazhafir.siamobile.ui.components.AddMahasiswaContent
+import com.endrazhafir.siamobile.ui.components.AddMataKuliahContent
 import com.endrazhafir.siamobile.ui.theme.*
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StatsScreen(
     type: String,
@@ -119,6 +123,10 @@ fun StatsScreen(
         }
     }
 
+    // State untuk bottom sheet
+    var showSheet by remember { mutableStateOf(false) }
+    var sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+
     // Judul sebelah tombol tambah
     val title = remember(type) {
         when (type) {
@@ -173,6 +181,47 @@ fun StatsScreen(
     val tableScrollState = rememberScrollState()
     val tableWidth = 1000.dp
 
+    if (showSheet) {
+        ModalBottomSheet(
+            onDismissRequest = { showSheet = false },
+            sheetState = sheetState,
+            containerColor = BackgroundCream,
+            dragHandle = { BottomSheetDefaults.DragHandle() }
+        ) {
+            Column {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(UGNGreen)
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Tambah $title",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold
+                    )
+
+                    IconButton(onClick = { showSheet = false }) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_close),
+                            contentDescription = "Close",
+                            tint = Color.White
+                        )
+                    }
+                }
+
+                when (type) {
+                    "MAHASISWA" -> AddMahasiswaContent(onSave = { showSheet = false })
+                    "MATAKULIAH" -> AddMataKuliahContent(onSave = { showSheet = false })
+                    "DOSEN" -> AddDosenContent(onSave = { showSheet = false })
+                }
+            }
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -208,7 +257,7 @@ fun StatsScreen(
                     )
 
                     Button(
-                        onClick = { /* Handle add */ },
+                        onClick = { showSheet = true },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = UGNGreen
                         ),
