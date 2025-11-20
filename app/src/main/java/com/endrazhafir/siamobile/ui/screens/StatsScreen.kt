@@ -878,16 +878,26 @@ fun MahasiswaTableRow(
                     modifier = Modifier.weight(1f),
                     horizontalArrangement = Arrangement.Center
                 ) {
+                    // Logic warna
+                    // cek status mahasiswa
+
+                    val isActive = mahasiswa.status.equals("Aktif", ignoreCase = true)
+                    val buttonColor = if (isActive) UGNRed else UGNGreenLight
+
                     // Active/Deactivate Button
-                    IconButton(
-                        onClick = onDeleteClick,
-                        modifier = Modifier.size(32.dp)
+                    Box(
+                        modifier = Modifier
+                            .size(32.dp)
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(buttonColor)
+                            .clickable { onDeleteClick() },
+                        contentAlignment = Alignment.Center
                     ) {
                         Icon(
-                            painter = painterResource(id = R.drawable.ic_delete),
-                            contentDescription = "Delete",
-                            tint = Color.Red,
-                            modifier = Modifier.size(20.dp)
+                            painter = painterResource(id = R.drawable.ic_power),
+                            contentDescription = "Status Action",
+                            modifier = Modifier.size(18.dp),
+                            tint = Color.White
                         )
                     }
                 }
@@ -1115,16 +1125,26 @@ fun DosenTableRow(
                     modifier = Modifier.weight(1f),
                     horizontalArrangement = Arrangement.Center
                 ) {
+                    // Logic warna
+                    // cek status dosen
+
+                    val isActive = dosen.status.equals("Aktif", ignoreCase = true)
+                    val buttonColor = if (isActive) UGNRed else UGNGreenLight
+
                     // Active/Deactivate Button
-                    IconButton(
-                        onClick = onDeleteClick,
-                        modifier = Modifier.size(32.dp)
+                    Box(
+                        modifier = Modifier
+                            .size(32.dp) // Ukuran Luar Tombol
+                            .clip(RoundedCornerShape(8.dp)) // INI KUNCINYA: Bentuk Rounded Box
+                            .background(buttonColor) // Warna Background
+                            .clickable { onDeleteClick() }, // Pindahkan aksi klik ke sini
+                        contentAlignment = Alignment.Center
                     ) {
                         Icon(
-                            painter = painterResource(id = R.drawable.ic_delete),
-                            contentDescription = "Delete",
-                            tint = Color.Red,
-                            modifier = Modifier.size(20.dp)
+                            painter = painterResource(id = R.drawable.ic_power),
+                            contentDescription = "Status Action",
+                            modifier = Modifier.size(18.dp), // Ukuran Icon (proporsional)
+                            tint = Color.White
                         )
                     }
                 }
