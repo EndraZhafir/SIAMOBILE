@@ -149,8 +149,8 @@ fun DashboardScreen(
             // Student Card
             ManagementCard(
                 icon = R.drawable.ic_student,
-                title = "Tambah Mahasiswa Baru",
-                subtitle = "Daftarkan mahasiswa baru ke dalam sistem",
+                title = "Manage Data Mahasiswa",
+                subtitle = "Kelola data mahasiswa dalam sistem",
                 onClick = onStudentClick
             )
 
@@ -159,8 +159,8 @@ fun DashboardScreen(
             // Subject Card
             ManagementCard(
                 icon = R.drawable.ic_subject,
-                title = "Tambah Mata Kuliah Baru",
-                subtitle = "Tambahkan mata kuliah baru ke dalam sistem",
+                title = "Manage Data Mata Kuliah",
+                subtitle = "Kelola data mata kuliah dalam sistem",
                 onClick = onSubjectClick
             )
 
@@ -169,8 +169,8 @@ fun DashboardScreen(
             // Lecturer Card
             ManagementCard(
                 icon = R.drawable.ic_lecturer,
-                title = "Tambah Dosen Baru",
-                subtitle = "Tambahkan dosen baru ke dalam sistem",
+                title = "Manage Data Dosen",
+                subtitle = "Kelola data dosen dalam sistem",
                 onClick = onLecturerClick
             )
         }
@@ -235,7 +235,7 @@ fun ManagementCard(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .height(100.dp)
+            .height(90.dp)
             .clickable { onClick() },
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
@@ -252,7 +252,7 @@ fun ManagementCard(
             Image(
                 painter = painterResource(id = icon),
                 contentDescription = title,
-                modifier = Modifier.size(60.dp),
+                modifier = Modifier.size(50.dp),
             )
             Column(
                 modifier = Modifier
@@ -262,7 +262,7 @@ fun ManagementCard(
             ) {
                 Text(
                     text = title,
-                    fontSize = 20.sp,
+                    fontSize = 18.sp,
                     fontFamily = urbanistFontFamily,
                     fontWeight = FontWeight.Bold,
                     color = UGNGreen

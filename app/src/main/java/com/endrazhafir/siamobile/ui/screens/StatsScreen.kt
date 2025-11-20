@@ -29,6 +29,7 @@ import com.endrazhafir.siamobile.data.*
 import com.endrazhafir.siamobile.ui.components.AddDosenContent
 import com.endrazhafir.siamobile.ui.components.AddMahasiswaContent
 import com.endrazhafir.siamobile.ui.components.AddMataKuliahContent
+import com.endrazhafir.siamobile.ui.components.ConfirmationDialog
 import com.endrazhafir.siamobile.ui.theme.*
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -71,6 +72,18 @@ fun StatsScreen(
             Dosen(2, "dr_lecter", "hanniballecter@gmail.com", "Hannibal Lecter", "Psychology", "Non-Aktif"),
         )
     }
+
+    // State dialog konfirmasi
+    // State hapus matkul
+    var showDeleteMatkulDialog by remember { mutableStateOf(false) }
+    var selectedMatkulToDelete by remember { mutableStateOf<MataKuliah?>(null) }
+
+    // State untuk Status Mahasiswa/Dosen
+    var showStatusDialog by remember { mutableStateOf(false) }
+
+    // Data target (nama user, status sekarang)
+    var selectedStatusTarget by remember { mutableStateOf<Triple<Int, String, String>?>(null) }
+    // Triple: (ID, Nama/Username, StatusSaatIni) -> ID dipake buat logic update nanti
 
     var searchQuery by remember { mutableStateOf("") }
     var currentPage by remember { mutableStateOf(1) }
@@ -222,6 +235,60 @@ fun StatsScreen(
         }
     }
 
+    // Pop Up dialog konfirmasi
+    // Pop up matkul
+    if(showDeleteMatkulDialog && selectedMatkulToDelete != null) {
+        ConfirmationDialog(
+            message = "Apakah Anda yakin ingin menghapus mata kuliah \"${selectedMatkulToDelete?.nama}\"?",
+            onConfirm = {
+                mataKuliahList.remove(selectedMatkulToDelete)
+
+                showDeleteMatkulDialog = false
+                selectedMatkulToDelete = null
+            },
+            onDismiss = {
+                showDeleteMatkulDialog = false
+                selectedMatkulToDelete = null
+            }
+        )
+    }
+
+    // Pop up mhs/dsn
+    if(showStatusDialog && selectedStatusTarget != null) {
+        val (id, name, currentStatus) = selectedStatusTarget!!
+        val isActive = currentStatus.equals("Aktif", ignoreCase = true)
+
+        val actionWord = if (isActive) "non-aktifkan" else "aktifkan"
+
+        ConfirmationDialog(
+            message = "Apakah Anda yakin ingin $actionWord akun ($name)?",
+            onConfirm = {
+                if (type == "MAHASISWA") {
+                    val index = mahasiswaList.indexOfFirst { it.id == id }
+                    if (index != -1) {
+                        val item = mahasiswaList[index]
+                        val newStatus = if (isActive) "Non-Aktif" else "Aktif"
+                        mahasiswaList[index] = item.copy(status = newStatus)
+                    }
+                } else if (type == "DOSEN") {
+                    val index = dosenList.indexOfFirst { it.id == id }
+                    if (index != -1) {
+                        val item = dosenList[index]
+                        val newStatus = if (isActive) "Non-Aktif" else "Aktif"
+                        dosenList[index] = item.copy(status = newStatus)
+                    }
+                }
+
+                showStatusDialog = false
+                selectedStatusTarget = null
+            },
+            onDismiss = {
+                showStatusDialog = false
+                selectedStatusTarget = null
+            }
+        )
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -318,7 +385,12 @@ fun StatsScreen(
                             number = globalIndex,
                             mahasiswa = data,
                             isLastItem = (index == paginatedList.lastIndex),
-                            onDeleteClick = { /*...*/ },
+                            onDeleteClick = {
+                                selectedStatusTarget = Triple(
+                                    data.id,
+                                    data.username,
+                                    data.status)
+                                showStatusDialog = true },
                             scrollState = tableScrollState,
                             width = tableWidth
                         )
@@ -341,7 +413,9 @@ fun StatsScreen(
                             mataKuliah = data,
                             isLastItem = (index == paginatedList.lastIndex),
                             onEditClick = { /*...*/ },
-                            onDeleteClick = { /*...*/ },
+                            onDeleteClick = {
+                                selectedMatkulToDelete = data
+                                showDeleteMatkulDialog = true },
                             scrollState = tableScrollState,
                             width = tableWidth
                         )
@@ -363,7 +437,12 @@ fun StatsScreen(
                             number = globalIndex,
                             dosen = data,
                             isLastItem = (index == paginatedList.lastIndex),
-                            onDeleteClick = { /*...*/ },
+                            onDeleteClick = {
+                                selectedStatusTarget = Triple(
+                                    data.id,
+                                    data.username,
+                                    data.status)
+                                showStatusDialog = true },
                             scrollState = tableScrollState,
                             width = tableWidth
                         )
@@ -988,28 +1067,38 @@ fun MataKuliahTableRow(
                     horizontalArrangement = Arrangement.Center
                 ) {
                     // Edit Button
-                    IconButton(
-                        onClick = onEditClick,
-                        modifier = Modifier.size(32.dp)
+                    Box(
+                        modifier = Modifier
+                            .size(32.dp)
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(UGNGreenLight)
+                            .clickable { onEditClick() },
+                        contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_edit),
                             contentDescription = "Edit",
-                            tint = UGNGold,
-                            modifier = Modifier.size(20.dp)
+                            modifier = Modifier.size(14.dp),
+                            tint = Color.White
                         )
                     }
 
+                    Spacer(modifier = Modifier.width(8.dp))
+
                     // Delete Button
-                    IconButton(
-                        onClick = onDeleteClick,
-                        modifier = Modifier.size(32.dp)
+                    Box(
+                        modifier = Modifier
+                            .size(32.dp)
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(UGNRed)
+                            .clickable { onDeleteClick() },
+                        contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_delete),
                             contentDescription = "Delete",
-                            tint = Color.Red,
-                            modifier = Modifier.size(20.dp)
+                            modifier = Modifier.size(14.dp),
+                            tint = Color.White 
                         )
                     }
                 }

@@ -210,6 +210,14 @@ fun AddMahasiswaContent(onSave: () -> Unit) {
             colors = ButtonDefaults.buttonColors(containerColor = UGNGreen),
             shape = RoundedCornerShape(8.dp)
         ) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_save),
+                contentDescription = null,
+                modifier = Modifier.size(18.dp)
+            )
+
+            Spacer(modifier = Modifier.width(8.dp))
+
             Text(
                 "Simpan",
                 style = MaterialTheme.typography.titleSmall,
@@ -342,6 +350,14 @@ fun AddDosenContent(onSave: () -> Unit) {
             colors = ButtonDefaults.buttonColors(containerColor = UGNGreen),
             shape = RoundedCornerShape(8.dp)
         ) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_save),
+                contentDescription = null,
+                modifier = Modifier.size(18.dp)
+            )
+
+            Spacer(modifier = Modifier.width(8.dp))
+
             Text(
                 "Simpan",
                 style = MaterialTheme.typography.titleSmall,

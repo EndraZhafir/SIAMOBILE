@@ -7,7 +7,7 @@ val Black = Color(0xFF000000)
 val White = Color(0xFFFFFFFF)
 
 // Warna UGN - Green
-
+val UGNGreenTransparent = Color(0xFFE6EEE9)
 val UGNGreenLight = Color(0xFF16874B)
 val UGNGreen = Color(0xFF015023)
 val UGNGreenDark = Color(0xFF014820)
