@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import com.endrazhafir.siamobile.ui.theme.UGNGold
 import com.endrazhafir.siamobile.ui.theme.UGNGreen
 import com.endrazhafir.siamobile.R
+import com.endrazhafir.siamobile.data.MataKuliah
 
 @Composable
 fun FormTextField(
@@ -368,5 +369,72 @@ fun AddDosenContent(onSave: () -> Unit) {
 
         Spacer(modifier = Modifier.height(50.dp))
 
+    }
+}
+
+@Composable
+fun EditMataKuliahContent(
+    mataKuliah: MataKuliah,
+    onUpdate: (MataKuliah) -> Unit
+) {
+    var nama by remember { mutableStateOf(mataKuliah.nama) }
+    var kode by remember { mutableStateOf(mataKuliah.kode) }
+    var sks by remember { mutableStateOf(mataKuliah.sks.toString()) }
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(20.dp)
+            .verticalScroll(rememberScrollState())
+    ) {
+        FormTextField(
+            label = "Nama Matkul",
+            value = nama,
+            onValueChange = { nama = it }
+        )
+
+        FormTextField(
+            label = "Kode Matkul",
+            value = kode,
+            onValueChange = { kode = it }
+        )
+
+        FormTextField(
+            label = "Jumlah SKS",
+            value = sks,
+            onValueChange = { sks = it },
+            keyboardType = KeyboardType.Number
+        )
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        Button(
+            onClick = {
+                val updatedSks = sks.toIntOrNull() ?: 0
+                onUpdate(mataKuliah.copy(nama = nama, kode = kode, sks = updatedSks))
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = UGNGreen),
+            shape = RoundedCornerShape(8.dp)
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_save),
+                contentDescription = null,
+                modifier = Modifier.size(18.dp)
+            )
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            Text(
+                "Simpan",
+                style = MaterialTheme.typography.titleSmall,
+                color = Color.White,
+                fontWeight = FontWeight.Bold
+            )
+        }
+
+        Spacer(modifier = Modifier.height(20.dp))
     }
 }

@@ -30,6 +30,7 @@ import com.endrazhafir.siamobile.ui.components.AddDosenContent
 import com.endrazhafir.siamobile.ui.components.AddMahasiswaContent
 import com.endrazhafir.siamobile.ui.components.AddMataKuliahContent
 import com.endrazhafir.siamobile.ui.components.ConfirmationDialog
+import com.endrazhafir.siamobile.ui.components.EditMataKuliahContent
 import com.endrazhafir.siamobile.ui.theme.*
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -84,6 +85,10 @@ fun StatsScreen(
     // Data target (nama user, status sekarang)
     var selectedStatusTarget by remember { mutableStateOf<Triple<Int, String, String>?>(null) }
     // Triple: (ID, Nama/Username, StatusSaatIni) -> ID dipake buat logic update nanti
+
+    // State untuk edit matkul
+    var showEditSheet by remember { mutableStateOf(false) }
+    var selectedMatkulToEdit by remember { mutableStateOf<MataKuliah?>(null) }
 
     var searchQuery by remember { mutableStateOf("") }
     var currentPage by remember { mutableStateOf(1) }
@@ -194,6 +199,7 @@ fun StatsScreen(
     val tableScrollState = rememberScrollState()
     val tableWidth = 1000.dp
 
+    // Form tambah matkul
     if (showSheet) {
         ModalBottomSheet(
             onDismissRequest = { showSheet = false },
@@ -231,6 +237,63 @@ fun StatsScreen(
                     "MATAKULIAH" -> AddMataKuliahContent(onSave = { showSheet = false })
                     "DOSEN" -> AddDosenContent(onSave = { showSheet = false })
                 }
+            }
+        }
+    }
+
+    // Form edit matkul
+    if (showEditSheet && selectedMatkulToEdit != null) {
+        ModalBottomSheet(
+            onDismissRequest = {
+                showEditSheet = false
+                selectedMatkulToEdit = null
+            },
+            sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+            containerColor = BackgroundCream,
+            dragHandle = { BottomSheetDefaults.DragHandle() }
+        ) {
+            Column {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(UGNGreen)
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Edit Matkul",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold
+                    )
+
+                    IconButton(
+                        onClick = {
+                            showEditSheet = false
+                            selectedMatkulToEdit = null
+                        }
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_close),
+                            contentDescription = "Close",
+                            tint = Color.White
+                        )
+                    }
+                }
+
+                EditMataKuliahContent(
+                    mataKuliah = selectedMatkulToEdit!!,
+                    onUpdate = { updatedData ->
+                        val index = mataKuliahList.indexOfFirst { it.id == updatedData.id }
+                        if (index != -1) {
+                            mataKuliahList[index] = updatedData
+                        }
+                        showEditSheet = false
+                        selectedMatkulToEdit = null
+
+                    }
+                )
             }
         }
     }
@@ -412,7 +475,10 @@ fun StatsScreen(
                             number = globalIndex,
                             mataKuliah = data,
                             isLastItem = (index == paginatedList.lastIndex),
-                            onEditClick = { /*...*/ },
+                            onEditClick = {
+                                selectedMatkulToEdit = data
+                                showEditSheet = true
+                            },
                             onDeleteClick = {
                                 selectedMatkulToDelete = data
                                 showDeleteMatkulDialog = true },
