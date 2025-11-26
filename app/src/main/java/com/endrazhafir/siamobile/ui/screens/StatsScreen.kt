@@ -205,33 +205,41 @@ fun StatsScreen(
             onDismissRequest = { showSheet = false },
             sheetState = sheetState,
             containerColor = BackgroundCream,
-            dragHandle = { BottomSheetDefaults.DragHandle() }
+            dragHandle = {}
         ) {
-            Column {
-                Row(
+            // Untuk yg pull header, background jadi hijau biar nge-blend.
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(UGNGreen)
+                    .padding(top = 12.dp, bottom = 16.dp, start = 16.dp, end = 16.dp)
+            ) {
+                // Garis handle jadi putih.
+                Box(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .background(UGNGreen)
-                        .padding(16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "Tambah $title",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = Color.White,
-                        fontWeight = FontWeight.Bold
-                    )
+                        .align(Alignment.CenterHorizontally)
+                        .width(32.dp)
+                        .height(4.dp)
+                        .clip(RoundedCornerShape(2.dp))
+                        .background(Color.White.copy(alpha = 0.5f))
+                )
 
-                    IconButton(onClick = { showSheet = false }) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_close),
-                            contentDescription = "Close",
-                            tint = Color.White
-                        )
-                    }
-                }
+                Spacer(modifier = Modifier.height(16.dp))
 
+                Text(
+                    text = "Tambah $title",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Start
+                )
+            }
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
                 when (type) {
                     "MAHASISWA" -> AddMahasiswaContent(onSave = { showSheet = false })
                     "MATAKULIAH" -> AddMataKuliahContent(onSave = { showSheet = false })
@@ -248,40 +256,42 @@ fun StatsScreen(
                 showEditSheet = false
                 selectedMatkulToEdit = null
             },
-            sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+            sheetState = sheetState,
             containerColor = BackgroundCream,
-            dragHandle = { BottomSheetDefaults.DragHandle() }
+            dragHandle = {}
         ) {
-            Column {
-                Row(
+            // Sama kaya yg di tambah ModalBottomSheet
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(UGNGreen)
+                    .padding(top = 12.dp, bottom = 16.dp, start = 16.dp, end = 16.dp)
+            ) {
+                Box(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .background(UGNGreen)
-                        .padding(16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "Edit Matkul",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = Color.White,
-                        fontWeight = FontWeight.Bold
-                    )
+                        .align(Alignment.CenterHorizontally)
+                        .width(32.dp)
+                        .height(4.dp)
+                        .clip(RoundedCornerShape(2.dp))
+                        .background(Color.White.copy(alpha = 0.5f))
+                )
 
-                    IconButton(
-                        onClick = {
-                            showEditSheet = false
-                            selectedMatkulToEdit = null
-                        }
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_close),
-                            contentDescription = "Close",
-                            tint = Color.White
-                        )
-                    }
-                }
+                Spacer(modifier = Modifier.height(16.dp))
 
+                Text(
+                    text = "Edit Matkul",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Start
+                )
+            }
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
                 EditMataKuliahContent(
                     mataKuliah = selectedMatkulToEdit!!,
                     onUpdate = { updatedData ->
@@ -291,7 +301,6 @@ fun StatsScreen(
                         }
                         showEditSheet = false
                         selectedMatkulToEdit = null
-
                     }
                 )
             }

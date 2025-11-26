@@ -2,7 +2,6 @@ package com.endrazhafir.siamobile.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.rememberScrollState
@@ -135,7 +134,11 @@ fun DashboardScreen(
                 .fillMaxSize()
                 .background(BackgroundCream)
                 .navigationBarsPadding()
-                .padding(20.dp)
+                .padding(
+                    start = 20.dp,
+                    top = 20.dp,
+                    end = 20.dp,
+                )
                 .verticalScroll(rememberScrollState())
         ) {
             Text(
@@ -173,6 +176,8 @@ fun DashboardScreen(
                 subtitle = "Kelola data dosen dalam sistem",
                 onClick = onLecturerClick
             )
+
+            Spacer(modifier = Modifier.height(20.dp))
         }
     }
 }
@@ -233,10 +238,10 @@ fun ManagementCard(
     modifier: Modifier = Modifier
 ) {
     Card(
+        onClick = onClick,
         modifier = modifier
             .fillMaxWidth()
-            .height(90.dp)
-            .clickable { onClick() },
+            .height(90.dp),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
             containerColor = White
