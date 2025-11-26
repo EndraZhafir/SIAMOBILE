@@ -239,6 +239,10 @@ fun StatsScreen(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
+
+                    // Buat membatasi tinggi sheetnya ke max 50% layar halaman.
+                    // Kalo konten isi terlalu panjang, nnti bisa di scroll.
+                    .fillMaxHeight(0.60f)
             ) {
                 when (type) {
                     "MAHASISWA" -> AddMahasiswaContent(onSave = { showSheet = false })
@@ -291,6 +295,7 @@ fun StatsScreen(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .fillMaxHeight(0.60f)
             ) {
                 EditMataKuliahContent(
                     mataKuliah = selectedMatkulToEdit!!,
