@@ -32,45 +32,45 @@ import com.endrazhafir.siamobile.ui.components.AddMataKuliahContent
 import com.endrazhafir.siamobile.ui.components.ConfirmationDialog
 import com.endrazhafir.siamobile.ui.components.EditMataKuliahContent
 import com.endrazhafir.siamobile.ui.theme.*
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.endrazhafir.siamobile.ui.viewmodel.StatsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StatsScreen(
     type: String,
-    onBackClick: () -> Unit = {}
+    onBackClick: () -> Unit = {},
+    viewModel: StatsViewModel = viewModel()
 ) {
+    val context = LocalContext.current
+
+    // TRIGGER FETCH API (memanggil viewModel)
+    // LaunchedEffect(Unit) -> dijalankan sekali pas layarnya dibuka
+    LaunchedEffect(Unit) {
+        if (type == "MATAKULIAH") {
+            viewModel.getMataKuliah(context)
+        }
+        // Nanti tambahkan if type == "MAHASISWA" -> viewModel.getMahasiswa(context)
+    }
 
     // Sample Data untuk Mahasiswa
     val mahasiswaList = remember {
         mutableStateListOf(
-            Mahasiswa(1, "literally_me", "ryangosling@gmail.com", "Ryan Gosling", "24/538769/SV/24535", "Software Engineer", "Aktif"),
-            Mahasiswa(2, "dark_passenger", "dextermorgan@gmail.com", "Dexter Morgan", "24/123456/SV/12345", "Software Engineer", "Aktif"),
-            Mahasiswa(3, "gatau_deh", "email@gmail.com", "Anonim", "Tes Nim", "Prodi Ghaib", "Aktif"),
+            Mahasiswa(1, "literally_me", "ryangosling@gmail.com", "Ryan Gosling", "24/538769/SV/24535", "Software Engineer", true),
+            Mahasiswa(2, "dark_passenger", "dextermorgan@gmail.com", "Dexter Morgan", "24/123456/SV/12345", "Software Engineer", true),
+            Mahasiswa(3, "gatau_deh", "email@gmail.com", "Anonim", "Tes Nim", "Prodi Ghaib", true),
         )
     }
 
-    // Sample Data untuk Mata Kuliah
-    val mataKuliahList = remember {
-        mutableStateListOf(
-            MataKuliah(1, "Pemrograman Mobile", "PM-301", 3),
-            MataKuliah(2, "Basis Data Lanjut", "BD-302", 3),
-            MataKuliah(3, "Sistem Operasi", "SO-303", 3),
-            MataKuliah(4, "Jaringan Komputer", "JK-304", 4),
-            MataKuliah(5, "Kecerdasan Buatan", "AI-123", 3),
-            MataKuliah(6, "Kecerdasan Alami", "AI-420", 3),
-            MataKuliah(7, "Kalkulus", "KK-376", 3),
-            MataKuliah(8, "Statistika", "ST-777", 3),
-            MataKuliah(9, "Bahasa Inggris", "EN-101", 3),
-            MataKuliah(10, "Ilmu Hitam", "IH-350", 3),
-            MataKuliah(11, "Negromancy", "NG-305", 3),
-        )
-    }
+    // Data dari ViewModel
+    val mataKuliahList = viewModel.mataKuliahList
 
     // Sample Data untuk Dosen
     val dosenList = remember {
         mutableStateListOf(
-            Dosen(1, "prfsr_grhm", "professorgraham@gmail.com", "Will Graham", "Criminology", "Aktif"),
-            Dosen(2, "dr_lecter", "hanniballecter@gmail.com", "Hannibal Lecter", "Psychology", "Non-Aktif"),
+            Dosen(1, "prfsr_grhm", "professorgraham@gmail.com", "Will Graham", "Criminology", true),
+            Dosen(2, "dr_lecter", "hanniballecter@gmail.com", "Hannibal Lecter", "Psychology", true),
         )
     }
 
@@ -83,7 +83,7 @@ fun StatsScreen(
     var showStatusDialog by remember { mutableStateOf(false) }
 
     // Data target (nama user, status sekarang)
-    var selectedStatusTarget by remember { mutableStateOf<Triple<Int, String, String>?>(null) }
+    var selectedStatusTarget by remember { mutableStateOf<Triple<Int, String, Boolean>?>(null) }
     // Triple: (ID, Nama/Username, StatusSaatIni) -> ID dipake buat logic update nanti
 
     // State untuk edit matkul
@@ -94,44 +94,40 @@ fun StatsScreen(
     var currentPage by remember { mutableStateOf(1) }
     val itemsPerPage = 10
 
-    val filteredList : List<Any> = remember(type, searchQuery, mahasiswaList, mataKuliahList, dosenList) {
-        if (searchQuery.isEmpty()) {
-            when (type) {
-                "MAHASISWA" -> mahasiswaList
-                "MATAKULIAH" -> mataKuliahList
-                "DOSEN" -> dosenList
-                else -> emptyList()
+    val filteredList : List<Any> = if (searchQuery.isEmpty()) {
+        when (type) {
+            "MAHASISWA" -> mahasiswaList
+            "MATAKULIAH" -> mataKuliahList
+            "DOSEN" -> dosenList
+            else -> emptyList()
+        }
+    } else {
+        when (type) {
+            "MAHASISWA" -> mahasiswaList.filter {
+                it.name.contains(searchQuery, ignoreCase = true) || it.nim.contains(searchQuery, ignoreCase = true)
             }
-        } else {
-            when (type) {
-                "MAHASISWA" -> mahasiswaList.filter {
-                    it.nama.contains(searchQuery, ignoreCase = true) || it.nim.contains(searchQuery, ignoreCase = true)
-                }
-                "MATAKULIAH" -> mataKuliahList.filter {
-                    it.nama.contains(searchQuery, ignoreCase = true) || it.kode.contains(searchQuery, ignoreCase = true)
-                }
-                "DOSEN" -> dosenList.filter {
-                    it.nama.contains(searchQuery, ignoreCase = true) || it.username.contains(searchQuery, ignoreCase = true)
-                }
-                else -> emptyList()
+            "MATAKULIAH" -> mataKuliahList.filter {
+                it.nameSubject.contains(searchQuery, ignoreCase = true) || it.codeSubject.contains(searchQuery, ignoreCase = true)
             }
+            "DOSEN" -> dosenList.filter {
+                it.name.contains(searchQuery, ignoreCase = true) || it.username.contains(searchQuery, ignoreCase = true)
+            }
+            else -> emptyList()
         }
     }
 
-    val totalActiveData = remember(type, mahasiswaList, mataKuliahList, dosenList) {
-        when (type) {
-            "MAHASISWA" -> mahasiswaList.size
-            "MATAKULIAH" -> mataKuliahList.size
-            "DOSEN" -> dosenList.size
-            else -> 0
-        }
+    val totalActiveData = when (type) {
+        "MAHASISWA" -> mahasiswaList.size
+        "MATAKULIAH" -> mataKuliahList.size
+        "DOSEN" -> dosenList.size
+        else -> 0
     }
 
     val totalPages = remember(filteredList.size) {
         kotlin.math.max(1, (filteredList.size + itemsPerPage - 1) / itemsPerPage)
     }
 
-    val paginatedList = remember(filteredList, currentPage) {
+    val paginatedList = run {
         val startIndex = (currentPage - 1) * itemsPerPage
         val endIndex = kotlin.math.min(startIndex + itemsPerPage, filteredList.size)
         if (startIndex < filteredList.size) {
@@ -143,7 +139,7 @@ fun StatsScreen(
 
     // State untuk bottom sheet
     var showSheet by remember { mutableStateOf(false) }
-    var sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     // Judul sebelah tombol tambah
     val title = remember(type) {
@@ -316,7 +312,7 @@ fun StatsScreen(
     // Pop up matkul
     if(showDeleteMatkulDialog && selectedMatkulToDelete != null) {
         ConfirmationDialog(
-            message = "Apakah Anda yakin ingin menghapus mata kuliah \"${selectedMatkulToDelete?.nama}\"?",
+            message = "Apakah Anda yakin ingin menghapus mata kuliah \"${selectedMatkulToDelete?.nameSubject}\"?",
             onConfirm = {
                 mataKuliahList.remove(selectedMatkulToDelete)
 
@@ -332,10 +328,9 @@ fun StatsScreen(
 
     // Pop up mhs/dsn
     if(showStatusDialog && selectedStatusTarget != null) {
-        val (id, name, currentStatus) = selectedStatusTarget!!
-        val isActive = currentStatus.equals("Aktif", ignoreCase = true)
+        val (id, name, currentStatusBoolean) = selectedStatusTarget!!
 
-        val actionWord = if (isActive) "non-aktifkan" else "aktifkan"
+        val actionWord = if (currentStatusBoolean) "non-aktifkan" else "aktifkan"
 
         ConfirmationDialog(
             message = "Apakah Anda yakin ingin $actionWord akun ($name)?",
@@ -344,15 +339,15 @@ fun StatsScreen(
                     val index = mahasiswaList.indexOfFirst { it.id == id }
                     if (index != -1) {
                         val item = mahasiswaList[index]
-                        val newStatus = if (isActive) "Non-Aktif" else "Aktif"
-                        mahasiswaList[index] = item.copy(status = newStatus)
+                        val newStatus = !currentStatusBoolean
+                        mahasiswaList[index] = item.copy(isActive = newStatus)
                     }
                 } else if (type == "DOSEN") {
                     val index = dosenList.indexOfFirst { it.id == id }
                     if (index != -1) {
                         val item = dosenList[index]
-                        val newStatus = if (isActive) "Non-Aktif" else "Aktif"
-                        dosenList[index] = item.copy(status = newStatus)
+                        val newStatus = !currentStatusBoolean
+                        dosenList[index] = item.copy(isActive = newStatus)
                     }
                 }
 
@@ -466,7 +461,8 @@ fun StatsScreen(
                                 selectedStatusTarget = Triple(
                                     data.id,
                                     data.username,
-                                    data.status)
+                                    data.isActive
+                                )
                                 showStatusDialog = true },
                             scrollState = tableScrollState,
                             width = tableWidth
@@ -521,7 +517,8 @@ fun StatsScreen(
                                 selectedStatusTarget = Triple(
                                     data.id,
                                     data.username,
-                                    data.status)
+                                    data.isActive
+                                )
                                 showStatusDialog = true },
                             scrollState = tableScrollState,
                             width = tableWidth
@@ -988,7 +985,7 @@ fun MahasiswaTableRow(
                 )
 
                 Text(
-                    text = mahasiswa.nama,
+                    text = mahasiswa.name,
                     style = MaterialTheme.typography.bodyLarge,
                     fontSize = 11.sp,
                     color = Black,
@@ -1008,7 +1005,7 @@ fun MahasiswaTableRow(
                 )
 
                 Text(
-                    text = mahasiswa.program,
+                    text = mahasiswa.programName,
                     style = MaterialTheme.typography.bodyLarge,
                     fontSize = 11.sp,
                     color = Black,
@@ -1020,15 +1017,19 @@ fun MahasiswaTableRow(
                 Box(
                     modifier = Modifier.weight(0.7f),
                     contentAlignment = Alignment.Center
+
                 ) {
+                    val statusText = if (mahasiswa.isActive) "Aktif" else "Non-Aktif"
+                    val statusColor = if (mahasiswa.isActive) UGNGreen else UGNRed
+
                     // Status Aktif/Non-Aktif
                     Text(
-                        text = mahasiswa.status,
+                        text = statusText,
                         style = MaterialTheme.typography.labelSmall,
                         fontSize = 11.sp,
                         color = Color.White,
                         modifier = Modifier
-                            .background(UGNGreen, RoundedCornerShape(8.dp))
+                            .background(statusColor, RoundedCornerShape(8.dp))
                             .padding(horizontal = 8.dp, vertical = 4.dp)
                     )
                 }
@@ -1039,9 +1040,7 @@ fun MahasiswaTableRow(
                 ) {
                     // Logic warna
                     // cek status mahasiswa
-
-                    val isActive = mahasiswa.status.equals("Aktif", ignoreCase = true)
-                    val buttonColor = if (isActive) UGNRed else UGNGreenLight
+                    val buttonColor = if (mahasiswa.isActive) UGNRed else UGNGreen
 
                     // Active/Deactivate Button
                     Box(
@@ -1110,7 +1109,7 @@ fun MataKuliahTableRow(
                     textAlign = TextAlign.Center
                 )
                 Text(
-                    text = mataKuliah.nama,
+                    text = mataKuliah.nameSubject,
                     style = MaterialTheme.typography.bodyLarge,
                     fontSize = 11.sp,
                     color = Black,
@@ -1119,7 +1118,7 @@ fun MataKuliahTableRow(
                         .padding(horizontal = 8.dp),
                 )
                 Text(
-                    text = mataKuliah.kode,
+                    text = mataKuliah.codeSubject,
                     style = MaterialTheme.typography.bodyLarge,
                     fontSize = 11.sp,
                     color = Black,
@@ -1253,7 +1252,7 @@ fun DosenTableRow(
                 )
 
                 Text(
-                    text = dosen.nama,
+                    text = dosen.name,
                     style = MaterialTheme.typography.bodyLarge,
                     fontSize = 11.sp,
                     color = Black,
@@ -1264,7 +1263,7 @@ fun DosenTableRow(
                 )
 
                 Text(
-                    text = dosen.program,
+                    text = dosen.programName,
                     style = MaterialTheme.typography.bodyLarge,
                     fontSize = 11.sp,
                     color = Black,
@@ -1278,14 +1277,17 @@ fun DosenTableRow(
                     modifier = Modifier.weight(0.7f),
                     contentAlignment = Alignment.Center
                 ) {
+                    val statusText = if (dosen.isActive) "Aktif" else "Non-Aktif"
+                    val statusColor = if (dosen.isActive) UGNGreen else UGNRed
+
                     // Status Aktif/Non-Aktif
                     Text(
-                        text = dosen.status,
+                        text = statusText,
                         style = MaterialTheme.typography.labelSmall,
                         fontSize = 11.sp,
                         color = Color.White,
                         modifier = Modifier
-                            .background(UGNGreen, RoundedCornerShape(8.dp))
+                            .background(statusColor, RoundedCornerShape(8.dp))
                             .padding(horizontal = 8.dp, vertical = 4.dp)
                     )
                 }
@@ -1296,9 +1298,7 @@ fun DosenTableRow(
                 ) {
                     // Logic warna
                     // cek status dosen
-
-                    val isActive = dosen.status.equals("Aktif", ignoreCase = true)
-                    val buttonColor = if (isActive) UGNRed else UGNGreenLight
+                    val buttonColor = if (dosen.isActive) UGNRed else UGNGreen
 
                     // Active/Deactivate Button
                     Box(

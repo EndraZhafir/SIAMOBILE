@@ -22,6 +22,7 @@ import com.endrazhafir.siamobile.ui.theme.*
 
 @Composable
 fun DashboardScreen(
+    userName: String = "Admin",
     onLogoutClick: () -> Unit = {},
     onStudentClick: () -> Unit = {},
     onSubjectClick: () -> Unit = {},
@@ -84,6 +85,27 @@ fun DashboardScreen(
             }
         }
 
+        // Profile
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(UGNGreen)
+                .padding(20.dp, 20.dp, 20.dp, 0.dp)
+        ) {
+            Text(
+                text = "Selamat datang, ",
+                style = MaterialTheme.typography.titleMedium,
+                fontSize = 16.sp,
+                color = White,
+            )
+            Text(
+                text = userName,
+                style = MaterialTheme.typography.displayLarge,
+                fontSize = 20.sp,
+                color = UGNGold,
+            )
+        }
+
         // Statistics
         Column(
             modifier = Modifier
@@ -102,7 +124,7 @@ fun DashboardScreen(
             // Horizontal scrollable stats cards
             LazyRow(
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier.height(200.dp)
+                modifier = Modifier.height(170.dp)
             ) {
                 item {
                     StatCard(
@@ -192,8 +214,8 @@ fun StatCard(
 ) {
     Card(
         modifier = modifier
-            .width(180.dp)
-            .fillMaxHeight(),
+            .width(170.dp)
+            .height(170.dp),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
             containerColor = BackgroundCream
@@ -210,19 +232,20 @@ fun StatCard(
             Image(
                 painter = painterResource(id = icon),
                 contentDescription = title,
-                modifier = Modifier.size(60.dp),
+                modifier = Modifier.size(50.dp),
                 colorFilter = ColorFilter.tint(UGNGold)
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = count,
                 style = MaterialTheme.typography.headlineLarge,
+                fontSize = 26.sp,
                 color = UGNGold
             )
             Text(
                 text = title,
                 style = MaterialTheme.typography.titleMedium,
-                fontSize = 18.sp,
+                fontSize = 16.sp,
                 color = UGNGold
             )
         }

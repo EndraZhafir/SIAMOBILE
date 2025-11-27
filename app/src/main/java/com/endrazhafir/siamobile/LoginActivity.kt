@@ -10,10 +10,23 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.endrazhafir.siamobile.ui.screens.LoginScreen
 import com.endrazhafir.siamobile.ui.theme.SiaMobileTheme
+import com.endrazhafir.siamobile.ui.viewmodel.LoginViewModel
+import com.endrazhafir.siamobile.utils.SessionManager
 
 class LoginActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Ngecek klo udh login, langsung di-redirect ke Dashboard
+        val session = SessionManager(this)
+        if (session.isLoggedIn()) {
+            startActivity(Intent(this, DashboardActivity::class.java))
+            finish()
+            return
+        }
+
+        val viewModel = LoginViewModel()
+
         enableEdgeToEdge(
             statusBarStyle = SystemBarStyle.dark(
                 Color.TRANSPARENT
@@ -25,19 +38,28 @@ class LoginActivity : ComponentActivity() {
         )
         setContent {
             SiaMobileTheme {
+                // Observe state sukses
+                if (viewModel.isLoginSuccess.value) {
+                    // Pindah ke halaman Dashboard Admin
+                    startActivity(Intent(this, DashboardActivity::class.java))
+                    finish()
+                }
+
                 LoginScreen(
+                    // Kirim state loading/error ke UI kalau mau ditampilkan
+                    // errorMessage = viewModel.loginError.value,
+
                     onLoginClick = { email, password ->
-                        // Handle login logic
-                        if (email.isNotEmpty() && password.isNotEmpty()) {
-                            Toast.makeText(this, "Login Success!", Toast.LENGTH_SHORT).show()
-                            // Navigate to Dashboard
-                            startActivity(Intent(this, DashboardActivity::class.java))
-                            finish()
-                        } else {
-                            Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show()
-                        }
+                        // Handle login logic dengan memanggil fun login di viewModel
+                        viewModel.login(this@LoginActivity, email, password)
                     }
                 )
+
+                // Tampilkan Toast error jika ada
+                if (viewModel.loginError.value.isNotEmpty()) {
+                    Toast.makeText(this, viewModel.loginError.value, Toast.LENGTH_SHORT).show()
+                    viewModel.loginError.value = ""
+                }
             }
         }
     }

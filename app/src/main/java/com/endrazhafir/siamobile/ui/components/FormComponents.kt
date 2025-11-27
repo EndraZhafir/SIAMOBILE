@@ -377,8 +377,8 @@ fun EditMataKuliahContent(
     mataKuliah: MataKuliah,
     onUpdate: (MataKuliah) -> Unit
 ) {
-    var nama by remember { mutableStateOf(mataKuliah.nama) }
-    var kode by remember { mutableStateOf(mataKuliah.kode) }
+    var nama by remember { mutableStateOf(mataKuliah.nameSubject) }
+    var kode by remember { mutableStateOf(mataKuliah.codeSubject) }
     var sks by remember { mutableStateOf(mataKuliah.sks.toString()) }
 
     Column(
@@ -411,7 +411,11 @@ fun EditMataKuliahContent(
         Button(
             onClick = {
                 val updatedSks = sks.toIntOrNull() ?: 0
-                onUpdate(mataKuliah.copy(nama = nama, kode = kode, sks = updatedSks))
+                onUpdate(mataKuliah.copy(
+                    nameSubject = nama,
+                    codeSubject = kode,
+                    sks = updatedSks)
+                )
             },
             modifier = Modifier
                 .fillMaxWidth()

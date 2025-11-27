@@ -3,6 +3,8 @@
 
     <uses-permission android:name="android.permission.INTERNET"/>
 
+    <!--Kalo menggunakan IP lokal (http://), bukan https://, Android secara default nge-blok demi keamanan.-->
+    <!--Dengan android:usesCleartextTraffic="true", untuk buka blok nya. Tapi kalo semisal sudah https://, mungkin hapus saja.-->
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -11,6 +13,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
+        android:usesCleartextTraffic="true"
         android:theme="@style/Theme.SIAMOBILE">
 
         <activity

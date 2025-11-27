@@ -10,10 +10,15 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.endrazhafir.siamobile.ui.screens.DashboardScreen
 import com.endrazhafir.siamobile.ui.theme.SiaMobileTheme
+import com.endrazhafir.siamobile.utils.SessionManager
 
 class DashboardActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val sessionManager = SessionManager(this)
+        val userName = sessionManager.getUserName() ?: "Admin"
+
         enableEdgeToEdge(
             statusBarStyle = SystemBarStyle.dark(
                 Color.TRANSPARENT
@@ -26,11 +31,15 @@ class DashboardActivity : ComponentActivity() {
         setContent {
             SiaMobileTheme {
                 DashboardScreen(
+                    userName = userName,
                     onLogoutClick = {
-                        Toast.makeText(this, "Berhasil Logout", Toast.LENGTH_SHORT).show()
-                        val intent =Intent(this, LoginActivity::class.java)
+                        sessionManager.clearSession()
 
+                        val intent = Intent(this@DashboardActivity, LoginActivity::class.java)
                         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+
+                        Toast.makeText(this, "Berhasil Logout", Toast.LENGTH_SHORT).show()
+
                         startActivity(intent)
                         finish()
                     },
