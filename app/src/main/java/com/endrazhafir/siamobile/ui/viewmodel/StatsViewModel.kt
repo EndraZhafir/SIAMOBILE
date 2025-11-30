@@ -2,6 +2,7 @@ package com.endrazhafir.siamobile.ui.viewmodel
 
 import android.content.Context
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.endrazhafir.siamobile.data.AddDosenRequest
@@ -18,13 +19,17 @@ class StatsViewModel : ViewModel() {
 
     var mahasiswaList = mutableStateListOf<Mahasiswa>()
         private set
+
     var mataKuliahList = mutableStateListOf<MataKuliah>()
         private set
 
     var dosenList = mutableStateListOf<Dosen>()
         private set
 
-    var isLoading = mutableStateListOf(false)
+    var programsList = mutableStateListOf<Program>()
+        private set
+
+    var isLoading = mutableStateOf(false)
 
     fun addMahasiswa(context : Context, request: AddMahasiswaRequest) {
         val token = SessionManager(context).getToken() ?: return
@@ -41,6 +46,7 @@ class StatsViewModel : ViewModel() {
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
+                android.widget.Toast.makeText(context, "Terjadi kesalahan: ${e.message}", android.widget.Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -49,6 +55,7 @@ class StatsViewModel : ViewModel() {
         val token = SessionManager(context).getToken() ?: return
 
         viewModelScope.launch {
+            isLoading.value = true
             try {
                 val response = RetrofitClient.instance.getUsersByRole(token, "mahasiswa")
 
@@ -60,7 +67,12 @@ class StatsViewModel : ViewModel() {
                     mahasiswaList.clear()
                     mahasiswaList.addAll(mappedList)
                 }
-            } catch (e: Exception) { e.printStackTrace() }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                android.widget.Toast.makeText(context, "Terjadi kesalahan: ${e.message}", android.widget.Toast.LENGTH_SHORT).show()
+            } finally {
+                isLoading.value = false
+            }
         }
     }
 
@@ -80,13 +92,13 @@ class StatsViewModel : ViewModel() {
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
+                android.widget.Toast.makeText(context, "Terjadi kesalahan: ${e.message}", android.widget.Toast.LENGTH_SHORT).show()
             }
         }
     }
 
     fun addMataKuliah(context: Context, matkul: MataKuliah) {
-        val sessionManager = SessionManager(context)
-        val token = sessionManager.getToken() ?: return
+        val token = SessionManager(context).getToken() ?: return
 
         viewModelScope.launch {
             try {
@@ -106,15 +118,10 @@ class StatsViewModel : ViewModel() {
     }
 
     fun getMataKuliah(context: Context) {
-        val sessionManager = SessionManager(context)
-        val token = sessionManager.getToken()
-
-        if (token == null) {
-            println("Error: Token tidak ditemukan, user harus login ulang")
-            return
-        }
+        val token = SessionManager(context).getToken() ?: return
 
         viewModelScope.launch {
+            isLoading.value = true
             try {
                 val response = RetrofitClient.instance.getAllMataKuliah(token)
 
@@ -130,14 +137,15 @@ class StatsViewModel : ViewModel() {
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                println("Exception: ${e.message}")
+                android.widget.Toast.makeText(context, "Terjadi kesalahan: ${e.message}", android.widget.Toast.LENGTH_SHORT).show()
+            } finally {
+                isLoading.value = false
             }
         }
     }
 
     fun updateMataKuliah(context: Context, id: Int, matkul: MataKuliah) {
-        val sessionManager = SessionManager(context)
-        val token = sessionManager.getToken() ?: return
+        val token = SessionManager(context).getToken() ?: return
 
         viewModelScope.launch {
             try {
@@ -157,8 +165,7 @@ class StatsViewModel : ViewModel() {
     }
 
     fun deleteMataKuliah(context: Context, id: Int) {
-        val sessionManager = SessionManager(context)
-        val token = sessionManager.getToken() ?: return
+        val token = SessionManager(context).getToken() ?: return
 
         viewModelScope.launch {
             try {
@@ -191,6 +198,7 @@ class StatsViewModel : ViewModel() {
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
+                android.widget.Toast.makeText(context, "Terjadi kesalahan: ${e.message}", android.widget.Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -199,6 +207,7 @@ class StatsViewModel : ViewModel() {
         val token = SessionManager(context).getToken() ?: return
 
         viewModelScope.launch {
+            isLoading.value = true
             try {
                 val response = RetrofitClient.instance.getUsersByRole(token, "dosen")
 
@@ -210,7 +219,12 @@ class StatsViewModel : ViewModel() {
                     dosenList.clear()
                     dosenList.addAll(mappedList)
                 }
-            } catch (e: Exception) { e.printStackTrace() }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                android.widget.Toast.makeText(context, "Terjadi kesalahan: ${e.message}", android.widget.Toast.LENGTH_SHORT).show()
+            } finally {
+                isLoading.value = false
+            }
         }
     }
 
@@ -230,12 +244,10 @@ class StatsViewModel : ViewModel() {
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
+                android.widget.Toast.makeText(context, "Terjadi kesalahan: ${e.message}", android.widget.Toast.LENGTH_SHORT).show()
             }
         }
     }
-
-    var programsList = mutableStateListOf<Program>()
-        private set
 
     fun getPrograms(context: Context) {
         val token = SessionManager(context).getToken() ?: return
@@ -247,7 +259,10 @@ class StatsViewModel : ViewModel() {
                     programsList.clear()
                     programsList.addAll(response.body()!!.data)
                 }
-            } catch (e: Exception) { e.printStackTrace() }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                android.widget.Toast.makeText(context, "Terjadi kesalahan: ${e.message}", android.widget.Toast.LENGTH_SHORT).show()
+            }
         }
     }
 }
