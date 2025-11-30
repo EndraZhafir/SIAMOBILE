@@ -17,6 +17,7 @@ class StatsViewModel : ViewModel() {
     // Loading state
     var isLoading = mutableStateListOf(false) // Simplifikasi state loading
 
+    // Fungsi fetch (ambil semua matkul)
     fun getMataKuliah(context: Context) {
 
         // Ambil token dari SessionManager
@@ -50,5 +51,68 @@ class StatsViewModel : ViewModel() {
         }
     }
 
-    // ... Fungsi add, update, delete sama logic-nya ...
+    // Fungsi delete (hapus matkul)
+    fun deleteMataKuliah(context: Context, id: Int) {
+        val sessionManager = SessionManager(context)
+        val token = sessionManager.getToken() ?: return
+
+        viewModelScope.launch {
+            try {
+                val response = RetrofitClient.instance.deleteMataKuliah(token, id)
+                if (response.isSuccessful) {
+                    android.widget.Toast.makeText(context, "Mata kuliah berhasil dihapus", android.widget.Toast.LENGTH_SHORT).show()
+                    getMataKuliah(context)
+                } else {
+                    android.widget.Toast.makeText(context, "Gagal menghapus mata kuliah: ${response.code()}", android.widget.Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                android.widget.Toast.makeText(context, "Terjadi kesalahan: ${e.message}", android.widget.Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    // Fungsi create (tambah matkul)
+    fun addMataKuliah(context: Context, matkul: MataKuliah) {
+        val sessionManager = SessionManager(context)
+        val token = sessionManager.getToken() ?: return
+
+        viewModelScope.launch {
+            try {
+                val response = RetrofitClient.instance.addMataKuliah(token, matkul)
+                if (response.isSuccessful) {
+                    android.widget.Toast.makeText(context, "Mata kuliah berhasil ditambahkan", android.widget.Toast.LENGTH_SHORT).show()
+                    getMataKuliah(context)
+                } else {
+                    val errorBody = response.errorBody()?.string()
+                    android.widget.Toast.makeText(context, "Gagal menambahkan mata kuliah: ${response.code()} - $errorBody", android.widget.Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                android.widget.Toast.makeText(context, "Terjadi kesalahan: ${e.message}", android.widget.Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    // Fungsi update (edit matkul)
+    fun updateMataKuliah(context: Context, id: Int, matkul: MataKuliah) {
+        val sessionManager = SessionManager(context)
+        val token = sessionManager.getToken() ?: return
+
+        viewModelScope.launch {
+            try {
+                val response = RetrofitClient.instance.updateMataKuliah(token, id, matkul)
+                if (response.isSuccessful) {
+                    android.widget.Toast.makeText(context, "Mata kuliah berhasil diupdate", android.widget.Toast.LENGTH_SHORT).show()
+                    getMataKuliah(context)
+                } else {
+                    val errorBody = response.errorBody()?.string()
+                    android.widget.Toast.makeText(context, "Gagal mengupdate mata kuliah: ${response.code()} - $errorBody", android.widget.Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                android.widget.Toast.makeText(context, "Terjadi kesalahan: ${e.message}", android.widget.Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
 }

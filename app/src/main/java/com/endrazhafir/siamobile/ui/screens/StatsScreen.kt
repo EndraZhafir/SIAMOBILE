@@ -242,7 +242,12 @@ fun StatsScreen(
             ) {
                 when (type) {
                     "MAHASISWA" -> AddMahasiswaContent(onSave = { showSheet = false })
-                    "MATAKULIAH" -> AddMataKuliahContent(onSave = { showSheet = false })
+
+                    "MATAKULIAH" -> AddMataKuliahContent(onSave = { newMatkul ->
+                        viewModel.addMataKuliah(context, newMatkul)
+                        showSheet = false
+                    })
+
                     "DOSEN" -> AddDosenContent(onSave = { showSheet = false })
                 }
             }
@@ -296,10 +301,8 @@ fun StatsScreen(
                 EditMataKuliahContent(
                     mataKuliah = selectedMatkulToEdit!!,
                     onUpdate = { updatedData ->
-                        val index = mataKuliahList.indexOfFirst { it.id == updatedData.id }
-                        if (index != -1) {
-                            mataKuliahList[index] = updatedData
-                        }
+                        viewModel.updateMataKuliah(context, updatedData.id, updatedData)
+
                         showEditSheet = false
                         selectedMatkulToEdit = null
                     }
@@ -314,10 +317,13 @@ fun StatsScreen(
         ConfirmationDialog(
             message = "Apakah Anda yakin ingin menghapus mata kuliah \"${selectedMatkulToDelete?.nameSubject}\"?",
             onConfirm = {
-                mataKuliahList.remove(selectedMatkulToDelete)
+                selectedMatkulToDelete?.let { matkul ->
+                    viewModel.deleteMataKuliah(context, matkul.id)
+                }
 
                 showDeleteMatkulDialog = false
                 selectedMatkulToDelete = null
+
             },
             onDismiss = {
                 showDeleteMatkulDialog = false

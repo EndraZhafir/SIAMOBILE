@@ -233,7 +233,9 @@ fun AddMahasiswaContent(onSave: () -> Unit) {
 }
 
 @Composable
-fun AddMataKuliahContent(onSave: () -> Unit) {
+fun AddMataKuliahContent(
+    onSave: (MataKuliah) -> Unit
+) {
     var nama by remember { mutableStateOf("") }
     var kode by remember { mutableStateOf("") }
     var sks by remember { mutableStateOf("") }
@@ -267,7 +269,12 @@ fun AddMataKuliahContent(onSave: () -> Unit) {
         Spacer(modifier = Modifier.height(20.dp))
 
         Button(
-            onClick = onSave,
+            onClick = {
+                val sksInt = sks.toIntOrNull() ?: 0
+                val newMatkul = MataKuliah(0, nama, kode, sksInt)
+
+                onSave(newMatkul)
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp),
