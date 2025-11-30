@@ -35,6 +35,9 @@ import com.endrazhafir.siamobile.ui.theme.*
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.endrazhafir.siamobile.ui.viewmodel.StatsViewModel
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
+import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
 
 @Composable
 fun LoadingState(message: String = "Memuat data...") {
@@ -379,189 +382,223 @@ fun StatsScreen(
 
     val isLoading = viewModel.isLoading.value
 
+    // State kalo pas mau refresh
+    var isRefreshing by remember { mutableStateOf(false) }
+    val pullRefreshState = rememberPullToRefreshState()
+
+    LaunchedEffect(isLoading) {
+        if (!isLoading) {
+            isRefreshing = false
+        }
+    }
+
+    val onRefresh: () -> Unit = {
+        isRefreshing = true
+        // Panggil ulang API
+        when (type) {
+            "MAHASISWA" -> viewModel.getMahasiswa(context)
+            "MATAKULIAH" -> viewModel.getMataKuliah(context)
+            "DOSEN" -> viewModel.getDosen(context)
+        }
+        viewModel.getPrograms(context)
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(BackgroundCream),
     ) {
         // Topbar
-        StatsTopBar(
-            onBackClick = onBackClick,
-        )
+        StatsTopBar(onBackClick = onBackClick)
 
-        if (isLoading) {
+        if (isLoading && !isRefreshing) {
             LoadingState(message = "Memuat data $title...")
         } else {
-
-            // Semua isi konten (kecuali topbar) dapat di-scroll
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 20.dp)
-                    .navigationBarsPadding(),
-                contentPadding = PaddingValues(vertical = 20.dp),
-                verticalArrangement = Arrangement.spacedBy(0.dp)
+            PullToRefreshBox(
+                isRefreshing = isRefreshing,
+                onRefresh = onRefresh,
+                state = pullRefreshState,
+                indicator = {
+                    PullToRefreshDefaults.Indicator(
+                        state = pullRefreshState,
+                        isRefreshing = isRefreshing,
+                        containerColor = UGNGreen,
+                        color = Color.White,
+                        modifier = Modifier.align(Alignment.TopCenter)
+                    )
+                }
             ) {
-                // Header dengan title dan tombol tambah
-                item {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = title,
-                            color = UGNGreen,
-                            style = MaterialTheme.typography.displayLarge,
-                            fontSize = 20.sp,
-                            modifier = Modifier.weight(1f)
-                        )
 
-                        Button(
-                            onClick = { showSheet = true },
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = UGNGreen
-                            ),
-                            shape = RoundedCornerShape(10.dp),
-                            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
-                            modifier = Modifier.height(36.dp)
+                // Semua isi konten (kecuali topbar) dapat di-scroll
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 20.dp)
+                        .navigationBarsPadding(),
+                    contentPadding = PaddingValues(vertical = 20.dp),
+                    verticalArrangement = Arrangement.spacedBy(0.dp)
+                ) {
+                    // Header dengan title dan tombol tambah
+                    item {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = "Tambah",
-                                style = MaterialTheme.typography.bodySmall
+                                text = title,
+                                color = UGNGreen,
+                                style = MaterialTheme.typography.displayLarge,
+                                fontSize = 20.sp,
+                                modifier = Modifier.weight(1f)
                             )
-                        }
-                    }
-                }
 
-                item { Spacer(modifier = Modifier.height(20.dp)) }
-
-                item {
-                    // Statistics Card
-                    StatsDetailCard(
-                        totalActive = totalActiveData,
-                        title = cardTitle,
-                        subtitle = cardSubtitle,
-                        iconResId = cardIconRes
-                    )
-                }
-
-                item { Spacer(modifier = Modifier.height(20.dp)) }
-
-                item {
-                    // Search Field
-                    StatsSearchField(
-                        value = searchQuery,
-                        onValueChange = {
-                            searchQuery = it
-                            currentPage = 1
-                        },
-                        placeholder = searchPlaceholder
-                    )
-                }
-
-                item { Spacer(modifier = Modifier.height(20.dp)) }
-
-                // Group table (header + rows)
-                when (type) {
-                    "MAHASISWA" -> {
-                        item {
-                            MahasiswaTableHeader(
-                                scrollState = tableScrollState,
-                                width = tableWidth
-                            )
-                        }
-                        itemsIndexed(paginatedList) { index, item ->
-                            val data = item as Mahasiswa
-                            val globalIndex = (currentPage - 1) * itemsPerPage + index + 1
-
-                            MahasiswaTableRow(
-                                number = globalIndex,
-                                mahasiswa = data,
-                                isLastItem = (index == paginatedList.lastIndex),
-                                onDeleteClick = {
-                                    selectedStatusTarget = Triple(
-                                        data.id,
-                                        data.username,
-                                        data.isActive
-                                    )
-                                    showStatusDialog = true
-                                },
-                                scrollState = tableScrollState,
-                                width = tableWidth
-                            )
+                            Button(
+                                onClick = { showSheet = true },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = UGNGreen
+                                ),
+                                shape = RoundedCornerShape(10.dp),
+                                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
+                                modifier = Modifier.height(36.dp)
+                            ) {
+                                Text(
+                                    text = "Tambah",
+                                    style = MaterialTheme.typography.bodySmall
+                                )
+                            }
                         }
                     }
 
-                    "MATAKULIAH" -> {
-                        item {
-                            MataKuliahTableHeader(
-                                scrollState = tableScrollState,
-                                width = tableWidth
-                            )
-                        }
-                        itemsIndexed(paginatedList) { index, item ->
-                            val data = item as MataKuliah
-                            val globalIndex = (currentPage - 1) * itemsPerPage + index + 1
+                    item { Spacer(modifier = Modifier.height(20.dp)) }
 
-                            MataKuliahTableRow(
-                                number = globalIndex,
-                                mataKuliah = data,
-                                isLastItem = (index == paginatedList.lastIndex),
-                                onEditClick = {
-                                    selectedMatkulToEdit = data
-                                    showEditSheet = true
-                                },
-                                onDeleteClick = {
-                                    selectedMatkulToDelete = data
-                                    showDeleteMatkulDialog = true
-                                },
-                                scrollState = tableScrollState,
-                                width = tableWidth
-                            )
+                    item {
+                        // Statistics Card
+                        StatsDetailCard(
+                            totalActive = totalActiveData,
+                            title = cardTitle,
+                            subtitle = cardSubtitle,
+                            iconResId = cardIconRes
+                        )
+                    }
+
+                    item { Spacer(modifier = Modifier.height(20.dp)) }
+
+                    item {
+                        // Search Field
+                        StatsSearchField(
+                            value = searchQuery,
+                            onValueChange = {
+                                searchQuery = it
+                                currentPage = 1
+                            },
+                            placeholder = searchPlaceholder
+                        )
+                    }
+
+                    item { Spacer(modifier = Modifier.height(20.dp)) }
+
+                    // Group table (header + rows)
+                    when (type) {
+                        "MAHASISWA" -> {
+                            item {
+                                MahasiswaTableHeader(
+                                    scrollState = tableScrollState,
+                                    width = tableWidth
+                                )
+                            }
+                            itemsIndexed(paginatedList) { index, item ->
+                                val data = item as Mahasiswa
+                                val globalIndex = (currentPage - 1) * itemsPerPage + index + 1
+
+                                MahasiswaTableRow(
+                                    number = globalIndex,
+                                    mahasiswa = data,
+                                    isLastItem = (index == paginatedList.lastIndex),
+                                    onDeleteClick = {
+                                        selectedStatusTarget = Triple(
+                                            data.id,
+                                            data.username,
+                                            data.isActive
+                                        )
+                                        showStatusDialog = true
+                                    },
+                                    scrollState = tableScrollState,
+                                    width = tableWidth
+                                )
+                            }
+                        }
+
+                        "MATAKULIAH" -> {
+                            item {
+                                MataKuliahTableHeader(
+                                    scrollState = tableScrollState,
+                                    width = tableWidth
+                                )
+                            }
+                            itemsIndexed(paginatedList) { index, item ->
+                                val data = item as MataKuliah
+                                val globalIndex = (currentPage - 1) * itemsPerPage + index + 1
+
+                                MataKuliahTableRow(
+                                    number = globalIndex,
+                                    mataKuliah = data,
+                                    isLastItem = (index == paginatedList.lastIndex),
+                                    onEditClick = {
+                                        selectedMatkulToEdit = data
+                                        showEditSheet = true
+                                    },
+                                    onDeleteClick = {
+                                        selectedMatkulToDelete = data
+                                        showDeleteMatkulDialog = true
+                                    },
+                                    scrollState = tableScrollState,
+                                    width = tableWidth
+                                )
+                            }
+                        }
+
+                        "DOSEN" -> {
+                            item {
+                                DosenTableHeader(
+                                    scrollState = tableScrollState,
+                                    width = tableWidth
+                                )
+                            }
+                            itemsIndexed(paginatedList) { index, item ->
+                                val data = item as Dosen
+                                val globalIndex = (currentPage - 1) * itemsPerPage + index + 1
+
+                                DosenTableRow(
+                                    number = globalIndex,
+                                    dosen = data,
+                                    isLastItem = (index == paginatedList.lastIndex),
+                                    onDeleteClick = {
+                                        selectedStatusTarget = Triple(
+                                            data.id,
+                                            data.username,
+                                            data.isActive
+                                        )
+                                        showStatusDialog = true
+                                    },
+                                    scrollState = tableScrollState,
+                                    width = tableWidth
+                                )
+                            }
                         }
                     }
 
-                    "DOSEN" -> {
-                        item {
-                            DosenTableHeader(
-                                scrollState = tableScrollState,
-                                width = tableWidth
-                            )
-                        }
-                        itemsIndexed(paginatedList) { index, item ->
-                            val data = item as Dosen
-                            val globalIndex = (currentPage - 1) * itemsPerPage + index + 1
+                    item { Spacer(modifier = Modifier.height(20.dp)) }
 
-                            DosenTableRow(
-                                number = globalIndex,
-                                dosen = data,
-                                isLastItem = (index == paginatedList.lastIndex),
-                                onDeleteClick = {
-                                    selectedStatusTarget = Triple(
-                                        data.id,
-                                        data.username,
-                                        data.isActive
-                                    )
-                                    showStatusDialog = true
-                                },
-                                scrollState = tableScrollState,
-                                width = tableWidth
-                            )
-                        }
+                    item {
+                        // Pagination
+                        StatsPaginationControls(
+                            currentPage = currentPage,
+                            totalPages = totalPages,
+                            onPreviousClick = { if (currentPage > 1) currentPage-- },
+                            onNextClick = { if (currentPage < totalPages) currentPage++ }
+                        )
                     }
-                }
-
-                item { Spacer(modifier = Modifier.height(20.dp)) }
-
-                item {
-                    // Pagination
-                    StatsPaginationControls(
-                        currentPage = currentPage,
-                        totalPages = totalPages,
-                        onPreviousClick = { if (currentPage > 1) currentPage-- },
-                        onNextClick = { if (currentPage < totalPages) currentPage++ }
-                    )
                 }
             }
         }
