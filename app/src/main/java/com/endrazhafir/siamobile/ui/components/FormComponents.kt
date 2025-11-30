@@ -40,6 +40,8 @@ import androidx.compose.ui.unit.dp
 import com.endrazhafir.siamobile.ui.theme.UGNGold
 import com.endrazhafir.siamobile.ui.theme.UGNGreen
 import com.endrazhafir.siamobile.R
+import com.endrazhafir.siamobile.data.AddDosenRequest
+import com.endrazhafir.siamobile.data.AddMahasiswaRequest
 import com.endrazhafir.siamobile.data.MataKuliah
 
 @Composable
@@ -149,7 +151,9 @@ fun FormDropdown(
 }
 
 @Composable
-fun AddMahasiswaContent(onSave: () -> Unit) {
+fun AddMahasiswaContent(
+    onSave: (AddMahasiswaRequest) -> Unit
+) {
     var username by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var nama by remember { mutableStateOf("") }
@@ -204,7 +208,25 @@ fun AddMahasiswaContent(onSave: () -> Unit) {
         Spacer(modifier = Modifier.height(20.dp))
 
         Button(
-            onClick = onSave,
+            onClick = {
+                val idProgram = when (program) {
+                    "Teknik Informatika" -> 2
+                    "Sistem Informasi" -> 3
+                    "Teknologi Rekayasa Perangkat Lunak" -> 1
+                    else -> 3
+                }
+
+                val request = AddMahasiswaRequest(
+                    nameStudent = nama,
+                    username = username,
+                    email = email,
+                    password = password,
+                    passwordConfirmation = password,
+                    idProgram = idProgram,
+                    nim = nim
+                )
+                onSave(request)
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp),
@@ -303,7 +325,9 @@ fun AddMataKuliahContent(
 }
 
 @Composable
-fun AddDosenContent(onSave: () -> Unit) {
+fun AddDosenContent(
+    onSave: (AddDosenRequest) -> Unit
+) {
     var username by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var nama by remember { mutableStateOf("") }
@@ -351,7 +375,24 @@ fun AddDosenContent(onSave: () -> Unit) {
         Spacer(modifier = Modifier.height(20.dp))
 
         Button(
-            onClick = onSave,
+            onClick = {
+                val idProgram = when (program) {
+                    "Teknik Informatika" -> 2
+                    "Sistem Informasi" -> 3
+                    "Teknologi Rekayasa Perangkat Lunak" -> 1
+                    else -> 3
+                }
+
+                val request = AddDosenRequest(
+                    nameLecturer = nama,
+                    username = username,
+                    email = email,
+                    password = password,
+                    passwordConfirmation = password,
+                    idProgram = idProgram,
+                )
+                onSave(request)
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp),

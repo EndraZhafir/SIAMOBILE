@@ -46,33 +46,22 @@ fun StatsScreen(
     val context = LocalContext.current
 
     // TRIGGER FETCH API (memanggil viewModel)
-    // LaunchedEffect(Unit) -> dijalankan sekali pas layarnya dibuka
     LaunchedEffect(Unit) {
+        if (type == "MAHASISWA") {
+            viewModel.getMahasiswa(context)
+        }
         if (type == "MATAKULIAH") {
             viewModel.getMataKuliah(context)
         }
-        // Nanti tambahkan if type == "MAHASISWA" -> viewModel.getMahasiswa(context)
-    }
-
-    // Sample Data untuk Mahasiswa
-    val mahasiswaList = remember {
-        mutableStateListOf(
-            Mahasiswa(1, "literally_me", "ryangosling@gmail.com", "Ryan Gosling", "24/538769/SV/24535", "Software Engineer", true),
-            Mahasiswa(2, "dark_passenger", "dextermorgan@gmail.com", "Dexter Morgan", "24/123456/SV/12345", "Software Engineer", true),
-            Mahasiswa(3, "gatau_deh", "email@gmail.com", "Anonim", "Tes Nim", "Prodi Ghaib", true),
-        )
+        if (type == "DOSEN") {
+            viewModel.getDosen(context)
+        }
     }
 
     // Data dari ViewModel
+    val mahasiswaList = viewModel.mahasiswaList
     val mataKuliahList = viewModel.mataKuliahList
-
-    // Sample Data untuk Dosen
-    val dosenList = remember {
-        mutableStateListOf(
-            Dosen(1, "prfsr_grhm", "professorgraham@gmail.com", "Will Graham", "Criminology", true),
-            Dosen(2, "dr_lecter", "hanniballecter@gmail.com", "Hannibal Lecter", "Psychology", true),
-        )
-    }
+    val dosenList = viewModel.dosenList
 
     // State dialog konfirmasi
     // State hapus matkul
@@ -104,13 +93,13 @@ fun StatsScreen(
     } else {
         when (type) {
             "MAHASISWA" -> mahasiswaList.filter {
-                it.name.contains(searchQuery, ignoreCase = true) || it.nim.contains(searchQuery, ignoreCase = true)
+                it.nameStudent.contains(searchQuery, ignoreCase = true) || it.nim.contains(searchQuery, ignoreCase = true)
             }
             "MATAKULIAH" -> mataKuliahList.filter {
                 it.nameSubject.contains(searchQuery, ignoreCase = true) || it.codeSubject.contains(searchQuery, ignoreCase = true)
             }
             "DOSEN" -> dosenList.filter {
-                it.name.contains(searchQuery, ignoreCase = true) || it.username.contains(searchQuery, ignoreCase = true)
+                it.nameLecturer.contains(searchQuery, ignoreCase = true) || it.username.contains(searchQuery, ignoreCase = true)
             }
             else -> emptyList()
         }
@@ -195,7 +184,7 @@ fun StatsScreen(
     val tableScrollState = rememberScrollState()
     val tableWidth = 1000.dp
 
-    // Form tambah matkul
+    // Form tambah
     if (showSheet) {
         ModalBottomSheet(
             onDismissRequest = { showSheet = false },
@@ -235,20 +224,23 @@ fun StatsScreen(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-
-                    // Buat membatasi tinggi sheetnya ke max 50% layar halaman.
-                    // Kalo konten isi terlalu panjang, nnti bisa di scroll.
                     .fillMaxHeight(0.60f)
             ) {
                 when (type) {
-                    "MAHASISWA" -> AddMahasiswaContent(onSave = { showSheet = false })
+                    "MAHASISWA" -> AddMahasiswaContent(onSave = { newMahasiswa ->
+                        viewModel.addMahasiswa(context, newMahasiswa)
+                        showSheet = false
+                    })
 
                     "MATAKULIAH" -> AddMataKuliahContent(onSave = { newMatkul ->
                         viewModel.addMataKuliah(context, newMatkul)
                         showSheet = false
                     })
 
-                    "DOSEN" -> AddDosenContent(onSave = { showSheet = false })
+                    "DOSEN" -> AddDosenContent(onSave = { newDosen ->
+                        viewModel.addDosen(context, newDosen)
+                        showSheet = false
+                    })
                 }
             }
         }
@@ -342,19 +334,9 @@ fun StatsScreen(
             message = "Apakah Anda yakin ingin $actionWord akun ($name)?",
             onConfirm = {
                 if (type == "MAHASISWA") {
-                    val index = mahasiswaList.indexOfFirst { it.id == id }
-                    if (index != -1) {
-                        val item = mahasiswaList[index]
-                        val newStatus = !currentStatusBoolean
-                        mahasiswaList[index] = item.copy(isActive = newStatus)
-                    }
+                    viewModel.toggleStatusMahasiswa(context, id)
                 } else if (type == "DOSEN") {
-                    val index = dosenList.indexOfFirst { it.id == id }
-                    if (index != -1) {
-                        val item = dosenList[index]
-                        val newStatus = !currentStatusBoolean
-                        dosenList[index] = item.copy(isActive = newStatus)
-                    }
+                    viewModel.toggleStatusDosen(context, id)
                 }
 
                 showStatusDialog = false
@@ -991,7 +973,7 @@ fun MahasiswaTableRow(
                 )
 
                 Text(
-                    text = mahasiswa.name,
+                    text = mahasiswa.nameStudent,
                     style = MaterialTheme.typography.bodyLarge,
                     fontSize = 11.sp,
                     color = Black,
@@ -1258,7 +1240,7 @@ fun DosenTableRow(
                 )
 
                 Text(
-                    text = dosen.name,
+                    text = dosen.nameLecturer,
                     style = MaterialTheme.typography.bodyLarge,
                     fontSize = 11.sp,
                     color = Black,
