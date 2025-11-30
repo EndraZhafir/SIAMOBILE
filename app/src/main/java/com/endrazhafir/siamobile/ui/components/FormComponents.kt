@@ -43,6 +43,7 @@ import com.endrazhafir.siamobile.R
 import com.endrazhafir.siamobile.data.AddDosenRequest
 import com.endrazhafir.siamobile.data.AddMahasiswaRequest
 import com.endrazhafir.siamobile.data.MataKuliah
+import com.endrazhafir.siamobile.data.Program
 
 @Composable
 fun FormTextField(
@@ -86,13 +87,26 @@ fun FormTextField(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FormDropdown(
+fun SearchableProgramDropdown(
     label: String,
-    options: List<String>,
-    selectedOption: String,
-    onOptionSelected: (String) -> Unit
+    options: List<Program>,
+    selectedProgramId: Int?,
+    onProgramSelected: (Program) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
+    var searchText by remember { mutableStateOf("") }
+    val initialName = options.find { it.id == selectedProgramId }?.name ?: ""
+
+    // Logic untuk filter options berdasarkan searchText
+    val filteredOptions = if (searchText.isEmpty() || searchText == initialName) {
+        options
+    } else {
+        options.filter { it.name.contains(searchText, ignoreCase = true) }
+    }
+
+    if (searchText.isEmpty() && selectedProgramId != null) {
+        searchText = initialName
+    }
 
     Column(
         modifier = Modifier
@@ -106,44 +120,49 @@ fun FormDropdown(
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(bottom = 4.dp)
         )
+
         ExposedDropdownMenuBox(
             expanded = expanded,
             onExpandedChange = { expanded = !expanded },
             modifier = Modifier.fillMaxWidth()
         ) {
             OutlinedTextField(
-                value = selectedOption,
-                onValueChange = {},
-                readOnly = true,
-                placeholder = { Text("Pilih opsi") },
+                value = searchText,
+                onValueChange = {
+                    searchText = it
+                    expanded = true
+                },
+                placeholder = { Text("Cari Program Studi...") },
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .menuAnchor(
-                        type = ExposedDropdownMenuAnchorType.PrimaryNotEditable,
-                        enabled = true
-                    ),
+                    .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable, true),
                 shape = RoundedCornerShape(8.dp),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = UGNGold,
                     unfocusedBorderColor = UGNGold,
-                    focusedContainerColor = UGNGold.copy(alpha = 0.2f),
-                    unfocusedContainerColor = UGNGold.copy(alpha = 0.2f)
-                )
+                    focusedContainerColor = Color.White,
+                    unfocusedContainerColor = Color.White
+                ),
+                singleLine = true
             )
-            ExposedDropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false },
-                modifier = Modifier.background(Color.White)
-            ) {
-                options.forEach { option ->
-                    DropdownMenuItem(
-                        text = { Text(option) },
-                        onClick = {
-                            onOptionSelected(option)
-                            expanded = false
-                        }
-                    )
+
+            if (filteredOptions.isNotEmpty()) {
+                ExposedDropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false },
+                    modifier = Modifier.background(Color.White)
+                ) {
+                    filteredOptions.forEach { program ->
+                        DropdownMenuItem(
+                            text = { Text(program.name) },
+                            onClick = {
+                                searchText = program.name
+                                onProgramSelected(program)
+                                expanded = false
+                            }
+                        )
+                    }
                 }
             }
         }
@@ -152,14 +171,15 @@ fun FormDropdown(
 
 @Composable
 fun AddMahasiswaContent(
+    programsList: List<Program>,
     onSave: (AddMahasiswaRequest) -> Unit
 ) {
     var username by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var nama by remember { mutableStateOf("") }
     var nim by remember { mutableStateOf("") }
-    var program by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var selectedProgramId by remember { mutableStateOf<Int?>(null) }
 
     Column(
         modifier = Modifier
@@ -167,11 +187,13 @@ fun AddMahasiswaContent(
             .padding(20.dp)
             .verticalScroll(rememberScrollState())
     ) {
-        FormDropdown(
+        SearchableProgramDropdown(
             label = "Program Studi",
-            options = listOf("Teknik Informatika", "Sistem Informasi", "Manajemen Informatika"),
-            selectedOption = program,
-            onOptionSelected = { program = it }
+            options = programsList,
+            selectedProgramId = selectedProgramId,
+            onProgramSelected = { program ->
+                selectedProgramId = program.id
+            }
         )
 
         FormTextField(
@@ -209,12 +231,7 @@ fun AddMahasiswaContent(
 
         Button(
             onClick = {
-                val idProgram = when (program) {
-                    "Teknik Informatika" -> 2
-                    "Sistem Informasi" -> 3
-                    "Teknologi Rekayasa Perangkat Lunak" -> 1
-                    else -> 3
-                }
+                val idProgram = selectedProgramId ?: 1
 
                 val request = AddMahasiswaRequest(
                     nameStudent = nama,
@@ -326,13 +343,14 @@ fun AddMataKuliahContent(
 
 @Composable
 fun AddDosenContent(
+    programsList: List<Program>,
     onSave: (AddDosenRequest) -> Unit
 ) {
     var username by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var nama by remember { mutableStateOf("") }
-    var program by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var selectedProgramId by remember { mutableStateOf<Int?>(null) }
 
     Column(
         modifier = Modifier
@@ -340,11 +358,13 @@ fun AddDosenContent(
             .padding(20.dp)
             .verticalScroll(rememberScrollState())
     ) {
-        FormDropdown(
+        SearchableProgramDropdown(
             label = "Program Studi",
-            options = listOf("Sistem Informasi", "Informatika", "Teknologi Informasi"),
-            selectedOption = program,
-            onOptionSelected = { program = it }
+            options = programsList,
+            selectedProgramId = selectedProgramId,
+            onProgramSelected = { program ->
+                selectedProgramId = program.id // Simpan ID-nya!
+            }
         )
 
         FormTextField(
@@ -376,12 +396,7 @@ fun AddDosenContent(
 
         Button(
             onClick = {
-                val idProgram = when (program) {
-                    "Teknik Informatika" -> 2
-                    "Sistem Informasi" -> 3
-                    "Teknologi Rekayasa Perangkat Lunak" -> 1
-                    else -> 3
-                }
+                val idProgram = selectedProgramId ?: 1
 
                 val request = AddDosenRequest(
                     nameLecturer = nama,

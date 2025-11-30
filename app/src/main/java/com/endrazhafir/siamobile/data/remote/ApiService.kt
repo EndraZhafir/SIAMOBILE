@@ -5,13 +5,13 @@ import com.endrazhafir.siamobile.data.AddMahasiswaRequest
 import com.endrazhafir.siamobile.data.LoginData
 import com.endrazhafir.siamobile.data.LoginRequest
 import com.endrazhafir.siamobile.data.MataKuliah
+import com.endrazhafir.siamobile.data.Program
 import com.endrazhafir.siamobile.data.UserResponse
 import com.endrazhafir.siamobile.data.response.ApiResponse
 import retrofit2.Response
 import retrofit2.http.*
 
 interface ApiService {
-
     // --- AUTH LOGIN ---
     @POST("auth/login")
     suspend fun login(
@@ -19,7 +19,6 @@ interface ApiService {
     ): Response<ApiResponse<LoginData>>
 
     // --- MAHASISWA ---
-
     // POST /api/manager/students
     @POST("manager/students")
     suspend fun addMahasiswa(
@@ -80,4 +79,10 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Path("id") id: Int
     ): Response<ApiResponse<Any>>
+
+    // --- TAMBAHAN ---
+    @GET("manager/programs")
+    suspend fun getPrograms(
+        @Header("Authorization") token: String
+    ): Response<ApiResponse<List<Program>>>
 }

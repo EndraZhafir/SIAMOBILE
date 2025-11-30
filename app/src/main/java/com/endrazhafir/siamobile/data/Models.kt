@@ -105,3 +105,8 @@ data class MataKuliah(
     @SerializedName("sks") val sks: Int,
 )
 
+// Data prodi
+data class Program(
+    @SerializedName("id_program") val id: Int,
+    @SerializedName("name") val name: String
+)

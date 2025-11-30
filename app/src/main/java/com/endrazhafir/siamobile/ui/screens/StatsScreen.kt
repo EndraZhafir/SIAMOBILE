@@ -56,6 +56,7 @@ fun StatsScreen(
         if (type == "DOSEN") {
             viewModel.getDosen(context)
         }
+        viewModel.getPrograms(context)
     }
 
     // Data dari ViewModel
@@ -184,6 +185,8 @@ fun StatsScreen(
     val tableScrollState = rememberScrollState()
     val tableWidth = 1000.dp
 
+    val programsList = viewModel.programsList
+
     // Form tambah
     if (showSheet) {
         ModalBottomSheet(
@@ -227,7 +230,9 @@ fun StatsScreen(
                     .fillMaxHeight(0.60f)
             ) {
                 when (type) {
-                    "MAHASISWA" -> AddMahasiswaContent(onSave = { newMahasiswa ->
+                    "MAHASISWA" -> AddMahasiswaContent(
+                        programsList = programsList,
+                        onSave = { newMahasiswa ->
                         viewModel.addMahasiswa(context, newMahasiswa)
                         showSheet = false
                     })
@@ -237,7 +242,9 @@ fun StatsScreen(
                         showSheet = false
                     })
 
-                    "DOSEN" -> AddDosenContent(onSave = { newDosen ->
+                    "DOSEN" -> AddDosenContent(
+                        programsList = programsList,
+                        onSave = { newDosen ->
                         viewModel.addDosen(context, newDosen)
                         showSheet = false
                     })

@@ -9,6 +9,7 @@ import com.endrazhafir.siamobile.data.AddMahasiswaRequest
 import com.endrazhafir.siamobile.data.Dosen
 import com.endrazhafir.siamobile.data.Mahasiswa
 import com.endrazhafir.siamobile.data.MataKuliah
+import com.endrazhafir.siamobile.data.Program
 import com.endrazhafir.siamobile.data.remote.RetrofitClient
 import com.endrazhafir.siamobile.utils.SessionManager
 import kotlinx.coroutines.launch
@@ -105,8 +106,6 @@ class StatsViewModel : ViewModel() {
     }
 
     fun getMataKuliah(context: Context) {
-
-        // Ambil token dari SessionManager
         val sessionManager = SessionManager(context)
         val token = sessionManager.getToken()
 
@@ -168,7 +167,7 @@ class StatsViewModel : ViewModel() {
                     android.widget.Toast.makeText(context, "Mata kuliah berhasil dihapus", android.widget.Toast.LENGTH_SHORT).show()
                     getMataKuliah(context)
                 } else {
-                    android.widget.Toast.makeText(context, "Gagal menghapus mata kuliah: ${response.code()}", android.widget.Toast.LENGTH_SHORT).show()
+                    android.widget.Toast.makeText(context, "Gagal menghapus mata kuliah: ${response.code()}. Mata Kuliah sedang digunakan.", android.widget.Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -232,6 +231,23 @@ class StatsViewModel : ViewModel() {
             } catch (e: Exception) {
                 e.printStackTrace()
             }
+        }
+    }
+
+    var programsList = mutableStateListOf<Program>()
+        private set
+
+    fun getPrograms(context: Context) {
+        val token = SessionManager(context).getToken() ?: return
+
+        viewModelScope.launch {
+            try {
+                val response = RetrofitClient.instance.getPrograms(token)
+                if (response.isSuccessful && response.body()?.status == "success") {
+                    programsList.clear()
+                    programsList.addAll(response.body()!!.data)
+                }
+            } catch (e: Exception) { e.printStackTrace() }
         }
     }
 }

@@ -10,7 +10,6 @@ class SessionManager(context: Context) {
     companion object {
         const val KEY_TOKEN = "auth_token"
         const val KEY_IS_LOGIN = "is_login"
-
         const val KEY_USER_NAME = "user_name"
     }
 
