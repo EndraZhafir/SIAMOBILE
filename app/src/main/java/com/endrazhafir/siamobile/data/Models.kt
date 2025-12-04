@@ -110,3 +110,10 @@ data class Program(
     @SerializedName("id_program") val id: Int,
     @SerializedName("name") val name: String
 )
+
+// Data statistics di dashboard
+data class DashboardStatistics(
+    @SerializedName("total_subjects") val totalSubjects: Int,
+    @SerializedName("total_students") val totalStudents: Int,
+    @SerializedName("total_lecturers") val totalLecturers: Int
+)

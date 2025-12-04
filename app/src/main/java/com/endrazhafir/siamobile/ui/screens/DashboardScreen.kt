@@ -19,6 +19,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.endrazhafir.siamobile.R
 import com.endrazhafir.siamobile.ui.theme.*
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.endrazhafir.siamobile.ui.viewmodel.DashboardViewModel
+import androidx.compose.ui.platform.LocalContext
 
 @Composable
 fun DashboardScreen(
@@ -26,8 +29,18 @@ fun DashboardScreen(
     onLogoutClick: () -> Unit = {},
     onStudentClick: () -> Unit = {},
     onSubjectClick: () -> Unit = {},
-    onLecturerClick: () -> Unit = {}
+    onLecturerClick: () -> Unit = {},
+    viewModel: DashboardViewModel = viewModel()
 ) {
+    val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        viewModel.getStatistics(context)
+    }
+
+    val stats = viewModel.statistics.value
+    val isLoading = viewModel.isLoading.value
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -130,21 +143,21 @@ fun DashboardScreen(
                     StatCard(
                         icon = R.drawable.ic_student_gold,
                         title = "Mahasiswa Aktif",
-                        count = "150"
+                        count = if (isLoading) "..." else stats.totalStudents.toString()
                     )
                 }
                 item {
                     StatCard(
                         icon = R.drawable.ic_subject_gold,
                         title = "Mata Kuliah Aktif",
-                        count = "45"
+                        count = if (isLoading) "..." else stats.totalSubjects.toString()
                     )
                 }
                 item {
                     StatCard(
                         icon = R.drawable.ic_lecturer_gold,
                         title = "Dosen Aktif",
-                        count = "32"
+                        count = if (isLoading) "..." else stats.totalLecturers.toString()
                     )
                 }
             }

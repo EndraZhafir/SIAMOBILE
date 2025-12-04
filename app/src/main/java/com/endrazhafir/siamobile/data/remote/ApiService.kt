@@ -2,6 +2,7 @@ package com.endrazhafir.siamobile.data.remote
 
 import com.endrazhafir.siamobile.data.AddDosenRequest
 import com.endrazhafir.siamobile.data.AddMahasiswaRequest
+import com.endrazhafir.siamobile.data.DashboardStatistics
 import com.endrazhafir.siamobile.data.LoginData
 import com.endrazhafir.siamobile.data.LoginRequest
 import com.endrazhafir.siamobile.data.MataKuliah
@@ -85,4 +86,10 @@ interface ApiService {
     suspend fun getPrograms(
         @Header("Authorization") token: String
     ): Response<ApiResponse<List<Program>>>
+
+    // GET /api/manager/statistics
+    @GET("manager/statistics")
+    suspend fun getDashboardStatistics(
+        @Header("Authorization") token: String
+    ): Response<ApiResponse<DashboardStatistics>>
 }

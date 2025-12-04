@@ -11,7 +11,7 @@ object RetrofitClient {
     // Kalo 'php artisan serve', biasanya port 8000 -> http://10.0.2.2:8000/api/
     // Kalo pake HP fisik/eksternal, ganti ke IP Address Laptop (misal 192.168.1.5)
     // Jalankan Laravel dengan: php artisan serve --host 0.0.0.0 --port 8000.
-    private const val BASE_URL = "http://192.168.1.3:8000/api/"
+    private const val BASE_URL = "https://api.trisuladana.com/api/"
 
     val instance: ApiService by lazy {
         val logging = HttpLoggingInterceptor().apply {
