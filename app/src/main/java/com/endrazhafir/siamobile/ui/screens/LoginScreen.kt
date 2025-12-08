@@ -46,7 +46,7 @@ fun LoginScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.primary),
+                .background(UGNGreen),
         ) {
         Column(
             modifier = Modifier
@@ -88,7 +88,7 @@ fun LoginScreen(
                     Text(
                         text = "Login",
                         style = MaterialTheme.typography.displayLarge,
-                        color = MaterialTheme.colorScheme.primary,
+                        color = UGNGreen,
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(bottom = 10.dp),
@@ -110,7 +110,7 @@ fun LoginScreen(
                     Text(
                         text = "Email",
                         style = MaterialTheme.typography.titleLarge,
-                        color = MaterialTheme.colorScheme.primary,
+                        color = UGNGreen,
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(bottom = 10.dp)
@@ -145,11 +145,11 @@ fun LoginScreen(
                         singleLine = true,
                         shape = RoundedCornerShape(10.dp),
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = MaterialTheme.colorScheme.secondary,
-                            unfocusedBorderColor = MaterialTheme.colorScheme.secondary,
-                            focusedLeadingIconColor = MaterialTheme.colorScheme.primary,
-                            unfocusedLeadingIconColor = MaterialTheme.colorScheme.primary,
-                            cursorColor = MaterialTheme.colorScheme.primary
+                            focusedBorderColor = UGNGreen,
+                            unfocusedBorderColor = UGNGold,
+                            focusedLeadingIconColor = UGNGreen,
+                            unfocusedLeadingIconColor = UGNGreen,
+                            cursorColor = UGNGreen
                         )
                     )
 
@@ -157,7 +157,7 @@ fun LoginScreen(
                     Text(
                         text = "Password",
                         style = MaterialTheme.typography.titleLarge,
-                        color = MaterialTheme.colorScheme.primary,
+                        color = UGNGreen,
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(bottom = 10.dp)
@@ -209,13 +209,13 @@ fun LoginScreen(
                         singleLine = true,
                         shape = RoundedCornerShape(10.dp),
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = MaterialTheme.colorScheme.secondary,
-                            unfocusedBorderColor = MaterialTheme.colorScheme.secondary,
-                            focusedLeadingIconColor = MaterialTheme.colorScheme.primary,
-                            unfocusedLeadingIconColor = MaterialTheme.colorScheme.primary,
-                            focusedTrailingIconColor = MaterialTheme.colorScheme.primary,
-                            unfocusedTrailingIconColor = MaterialTheme.colorScheme.primary,
-                            cursorColor = MaterialTheme.colorScheme.primary
+                            focusedBorderColor = UGNGreen,
+                            unfocusedBorderColor = UGNGold,
+                            focusedLeadingIconColor = UGNGreen,
+                            unfocusedLeadingIconColor = UGNGreen,
+                            focusedTrailingIconColor = UGNGreen,
+                            unfocusedTrailingIconColor = UGNGreen,
+                            cursorColor = UGNGreen
                         )
                     )
 
@@ -227,7 +227,7 @@ fun LoginScreen(
                             .height(56.dp),
                         shape = RoundedCornerShape(12.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.secondary
+                            containerColor = UGNGold
                         )
                     ) {
                         Text(

@@ -78,25 +78,26 @@ data class Dosen(
 
 // Data yg dikirim saat tambah Mahasiswa
 data class AddMahasiswaRequest(
-    @SerializedName("name")
-    val nameStudent: String,
     val username: String,
     val email: String,
     val password: String,
-    @SerializedName("password_confirmation") val passwordConfirmation: String,
+    @SerializedName("name") val nameStudent: String,
     @SerializedName("id_program") val idProgram: Int,
-    @SerializedName("registration_number") val nim: String
+    @SerializedName("is_active") val isActive: Boolean,
+    @SerializedName("registration_number") val nim: String,
+    @SerializedName("password_confirmation") val passwordConfirmation: String,
+
 )
 
 // Data yg dikirim saat tambah Dosen
 data class AddDosenRequest(
-    @SerializedName("name")
-    val nameLecturer: String,
     val username: String,
     val email: String,
     val password: String,
-    @SerializedName("password_confirmation") val passwordConfirmation: String,
+    @SerializedName("name") val nameLecturer: String,
     @SerializedName("id_program") val idProgram: Int,
+    @SerializedName("is_active") val isActive: Boolean,
+    @SerializedName("password_confirmation") val passwordConfirmation: String,
 )
 data class MataKuliah(
     @SerializedName("id_subject") val id: Int,

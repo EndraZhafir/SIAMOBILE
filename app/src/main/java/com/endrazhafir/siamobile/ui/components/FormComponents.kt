@@ -1,7 +1,9 @@
 package com.endrazhafir.siamobile.ui.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -14,6 +16,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -29,6 +33,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -37,7 +42,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import com.endrazhafir.siamobile.ui.theme.UGNGold
 import com.endrazhafir.siamobile.ui.theme.UGNGreen
 import com.endrazhafir.siamobile.R
 import com.endrazhafir.siamobile.data.AddDosenRequest
@@ -73,14 +77,48 @@ fun FormTextField(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(8.dp),
             colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = UGNGold,
-                unfocusedBorderColor = UGNGold,
+                focusedBorderColor = UGNGreen,
+                unfocusedBorderColor = UGNGreen,
                 focusedContainerColor = Color.White,
                 unfocusedContainerColor = Color.White
             ),
             singleLine = true,
             visualTransformation = if (isPassword) PasswordVisualTransformation() else VisualTransformation.None,
             keyboardOptions = KeyboardOptions(keyboardType = keyboardType)
+        )
+    }
+}
+
+@Composable
+fun FormCheckbox(
+    label: String,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp)
+            .border(
+                1.dp,
+                UGNGreen,
+                RoundedCornerShape(8.dp)
+            )
+            .padding(horizontal = 8.dp, vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Checkbox(
+            checked = checked,
+            onCheckedChange = onCheckedChange,
+            colors = CheckboxDefaults.colors(
+                checkedColor = UGNGreen,
+                uncheckedColor = Color.Gray
+            )
+        )
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodyMedium,
+            color = UGNGreen.copy(alpha = 0.5f),
         )
     }
 }
@@ -139,8 +177,8 @@ fun SearchableProgramDropdown(
                     .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable, true),
                 shape = RoundedCornerShape(8.dp),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = UGNGold,
-                    unfocusedBorderColor = UGNGold,
+                    focusedBorderColor = UGNGreen,
+                    unfocusedBorderColor = UGNGreen,
                     focusedContainerColor = Color.White,
                     unfocusedContainerColor = Color.White
                 ),
@@ -175,11 +213,13 @@ fun AddMahasiswaContent(
     onSave: (AddMahasiswaRequest) -> Unit
 ) {
     var username by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
     var nama by remember { mutableStateOf("") }
     var nim by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var passwordConfirmation by remember { mutableStateOf("") }
     var selectedProgramId by remember { mutableStateOf<Int?>(null) }
+    var isActive by remember { mutableStateOf(true) }
 
     Column(
         modifier = Modifier
@@ -187,6 +227,57 @@ fun AddMahasiswaContent(
             .padding(20.dp)
             .verticalScroll(rememberScrollState())
     ) {
+        // Kolom username
+        FormTextField(
+            label = "Username",
+            value = username,
+            onValueChange = { username = it },
+            placeholder = "Masukkan username mahasiswa"
+        )
+
+        // Kolom nama lengkap
+        FormTextField(
+            label = "Nama Lengkap",
+            value = nama,
+            onValueChange = { nama = it },
+            placeholder = "Masukkan nama lengkap mahasiswa"
+        )
+
+        // Kolom NIM
+        FormTextField(
+            label = "NIM",
+            value = nim,
+            onValueChange = { nim = it },
+            placeholder = "Masukkan NIM mahasiswa"
+        )
+
+        // Kolom email
+        FormTextField(
+            label = "Email",
+            value = email,
+            onValueChange = { email = it },
+            placeholder = "Masukkan email mahasiswa"
+        )
+
+        // Kolom password
+        FormTextField(
+            label = "Password",
+            value = password,
+            onValueChange = { password = it },
+            isPassword = true,
+            placeholder = "Masukkan password"
+        )
+
+        // Kolom konfirmasi password
+        FormTextField(
+            label = "Konfirmasi Password",
+            value = passwordConfirmation,
+            onValueChange = { passwordConfirmation = it },
+            isPassword = true,
+            placeholder = "Ulangi password"
+        )
+
+        // Kolom dropdown prodi
         SearchableProgramDropdown(
             label = "Program Studi",
             options = programsList,
@@ -196,35 +287,13 @@ fun AddMahasiswaContent(
             }
         )
 
-        FormTextField(
-            label = "Username",
-            value = username,
-            onValueChange = { username = it }
-        )
+        Spacer(modifier = Modifier.height(8.dp))
 
-        FormTextField(
-            label = "Email",
-            value = email,
-            onValueChange = { email = it }
-        )
-
-        FormTextField(
-            label = "Nama Lengkap",
-            value = nama,
-            onValueChange = { nama = it }
-        )
-
-        FormTextField(
-            label = "NIM",
-            value = nim,
-            onValueChange = { nim = it }
-        )
-
-        FormTextField(
-            label = "Password",
-            value = password,
-            onValueChange = { password = it },
-            isPassword = true
+        // Kolom checkbox status
+        FormCheckbox(
+            label = "Status Aktif",
+            checked = isActive,
+            onCheckedChange = { isActive = it }
         )
 
         Spacer(modifier = Modifier.height(20.dp))
@@ -233,14 +302,20 @@ fun AddMahasiswaContent(
             onClick = {
                 val idProgram = selectedProgramId ?: 1
 
+                // Validasi password sama ato ngga
+                if (password != passwordConfirmation) {
+                    // Logic utk error handling bisa ditambah disini ntah kapan
+                }
+
                 val request = AddMahasiswaRequest(
-                    nameStudent = nama,
                     username = username,
+                    nameStudent = nama,
+                    nim = nim,
                     email = email,
                     password = password,
-                    passwordConfirmation = password,
+                    passwordConfirmation = passwordConfirmation,
                     idProgram = idProgram,
-                    nim = nim
+                    isActive = isActive,
                 )
                 onSave(request)
             },
@@ -285,18 +360,21 @@ fun AddMataKuliahContent(
             .padding(20.dp)
             .verticalScroll(rememberScrollState())
     ) {
+        // Kolom nama matkul
         FormTextField(
             label = "Nama Matkul",
             value = nama,
             onValueChange = { nama = it },
             placeholder = "Pemrograman Aplikasi Mobile"
         )
+        // Kolom kode matkul
         FormTextField(
             label = "Kode Matkul",
             value = kode,
             onValueChange = { kode = it },
             placeholder = "PAM-206"
         )
+        // Kolom sks
         FormTextField(
             label = "Jumlah SKS",
             value = sks,
@@ -347,10 +425,12 @@ fun AddDosenContent(
     onSave: (AddDosenRequest) -> Unit
 ) {
     var username by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
     var nama by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var passwordConfirmation by remember { mutableStateOf("") }
     var selectedProgramId by remember { mutableStateOf<Int?>(null) }
+    var isActive by remember { mutableStateOf(true) }
 
     Column(
         modifier = Modifier
@@ -358,38 +438,65 @@ fun AddDosenContent(
             .padding(20.dp)
             .verticalScroll(rememberScrollState())
     ) {
+        // Kolom username
+        FormTextField(
+            label = "Username",
+            value = username,
+            onValueChange = { username = it },
+            placeholder = "Masukkan username dosen"
+        )
+
+        // Kolom nama lengkap
+        FormTextField(
+            label = "Nama Lengkap",
+            value = nama,
+            onValueChange = { nama = it },
+            placeholder = "Masukkan nama lengkap dosen"
+        )
+
+        // Kolom email
+        FormTextField(
+            label = "Email",
+            value = email,
+            onValueChange = { email = it },
+            placeholder = "Masukkan email dosen"
+        )
+
+        // Kolom password
+        FormTextField(
+            label = "Password",
+            value = password,
+            onValueChange = { password = it },
+            isPassword = true,
+            placeholder = "Masukkan password"
+        )
+
+        // Kolom konfirmasi password
+        FormTextField(
+            label = "Konfirmasi Password",
+            value = passwordConfirmation,
+            onValueChange = { passwordConfirmation = it },
+            isPassword = true,
+            placeholder = "Ulangi password"
+        )
+
+        // Kolom dropdown prodi
         SearchableProgramDropdown(
             label = "Program Studi",
             options = programsList,
             selectedProgramId = selectedProgramId,
             onProgramSelected = { program ->
-                selectedProgramId = program.id // Simpan ID-nya!
+                selectedProgramId = program.id
             }
         )
 
-        FormTextField(
-            label = "Username",
-            value = username,
-            onValueChange = { username = it }
-        )
+        Spacer(modifier = Modifier.height(8.dp))
 
-        FormTextField(
-            label = "Email",
-            value = email,
-            onValueChange = { email = it }
-        )
-
-        FormTextField(
-            label = "Nama Lengkap",
-            value = nama,
-            onValueChange = { nama = it }
-        )
-
-        FormTextField(
-            label = "Password",
-            value = password,
-            onValueChange = { password = it },
-            isPassword = true
+        // Kolom checkbox status
+        FormCheckbox(
+            label = "Status Aktif",
+            checked = isActive,
+            onCheckedChange = { isActive = it }
         )
 
         Spacer(modifier = Modifier.height(20.dp))
@@ -398,13 +505,19 @@ fun AddDosenContent(
             onClick = {
                 val idProgram = selectedProgramId ?: 1
 
+                // Validasi password sama ato ngga
+                if (password != passwordConfirmation) {
+                    // Logic utk error handling bisa ditambah disini ntah kapan
+                }
+
                 val request = AddDosenRequest(
-                    nameLecturer = nama,
                     username = username,
+                    nameLecturer = nama,
                     email = email,
                     password = password,
-                    passwordConfirmation = password,
+                    passwordConfirmation = passwordConfirmation,
                     idProgram = idProgram,
+                    isActive = isActive,
                 )
                 onSave(request)
             },
