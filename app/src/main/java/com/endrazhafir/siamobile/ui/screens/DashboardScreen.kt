@@ -8,9 +8,13 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -22,7 +26,11 @@ import com.endrazhafir.siamobile.ui.theme.*
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.endrazhafir.siamobile.ui.viewmodel.DashboardViewModel
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DashboardScreen(
     userName: String = "Admin",
@@ -33,13 +41,39 @@ fun DashboardScreen(
     viewModel: DashboardViewModel = viewModel()
 ) {
     val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
 
-    LaunchedEffect(Unit) {
-        viewModel.getStatistics(context)
+    // Login ON_RESUME (misal balik dari StatsActivity)
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                viewModel.getStatistics(context)
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
     }
 
+    // Logic pull to refresh
     val stats = viewModel.statistics.value
     val isLoading = viewModel.isLoading.value
+
+    var isRefreshing by remember { mutableStateOf(false) }
+    val pullRefreshState = rememberPullToRefreshState()
+
+    // Sinkronisasi status loading viewModel dengan UI Refresh
+    LaunchedEffect(isLoading) {
+        if (!isLoading) {
+            isRefreshing = false
+        }
+    }
+
+    val onRefresh: () -> Unit = {
+        isRefreshing = true
+        viewModel.getStatistics(context)
+    }
 
     Column(
         modifier = Modifier
@@ -59,14 +93,12 @@ fun DashboardScreen(
                     .padding(10.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Logo
                 Image(
                     painter = painterResource(id = R.drawable.ic_color),
                     contentDescription = "Logo UGN",
                     modifier = Modifier.size(50.dp)
                 )
 
-                // University Info
                 Column(
                     modifier = Modifier
                         .weight(1f)
@@ -86,7 +118,6 @@ fun DashboardScreen(
                     )
                 }
 
-                // Logout Button
                 TextButton(onClick = onLogoutClick) {
                     Text(
                         text = "Logout",
@@ -98,121 +129,136 @@ fun DashboardScreen(
             }
         }
 
-        // Profile
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(UGNGreen)
-                .padding(20.dp, 20.dp, 20.dp, 0.dp)
+        // Content area (yg bisa di pull ama scroll)
+        PullToRefreshBox(
+            isRefreshing = isRefreshing,
+            onRefresh = onRefresh,
+            state = pullRefreshState,
+            indicator = {
+                PullToRefreshDefaults.Indicator(
+                    state = pullRefreshState,
+                    isRefreshing = isRefreshing,
+                    containerColor = UGNGreen,
+                    color = Color.White,
+                    modifier = Modifier.align(Alignment.TopCenter)
+                )
+            }
         ) {
-            Text(
-                text = "Selamat datang, ",
-                style = MaterialTheme.typography.titleMedium,
-                fontSize = 16.sp,
-                color = White,
-            )
-            Text(
-                text = userName,
-                style = MaterialTheme.typography.displayLarge,
-                fontSize = 20.sp,
-                color = UGNGold,
-            )
-        }
-
-        // Statistics
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(UGNGreen)
-                .padding(20.dp)
-        ) {
-            Text(
-                text = "Statistik",
-                style = MaterialTheme.typography.displayLarge,
-                fontSize = 30.sp,
-                color = White,
-                modifier = Modifier.padding(bottom = 10.dp)
-            )
-
-            // Horizontal scrollable stats cards
-            LazyRow(
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier.height(170.dp)
+            // Profile, Stats, dan Menu dalam satu Column scrollable biar UX scroll-nya enak
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(BackgroundCream) // Default background bawah cream
+                    .verticalScroll(rememberScrollState())
             ) {
-                item {
-                    StatCard(
-                        icon = R.drawable.ic_student_gold,
-                        title = "Mahasiswa Aktif",
-                        count = if (isLoading) "..." else stats.totalStudents.toString()
+                // Profile & Stats
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(UGNGreen)
+                        .padding(start = 20.dp, end = 20.dp, bottom = 30.dp)
+                        .background(UGNGreen)
+                ) {
+                    // Profile
+                    Text(
+                        text = "Selamat datang, ",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontSize = 16.sp,
+                        color = White,
+                        modifier = Modifier.padding(top = 10.dp)
                     )
+                    Text(
+                        text = userName,
+                        style = MaterialTheme.typography.displayLarge,
+                        fontSize = 20.sp,
+                        color = UGNGold,
+                    )
+
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                    // Statistics Header
+                    Text(
+                        text = "Statistik",
+                        style = MaterialTheme.typography.displayLarge,
+                        fontSize = 30.sp,
+                        color = White,
+                        modifier = Modifier.padding(bottom = 10.dp)
+                    )
+
+                    // Cards Row
+                    LazyRow(
+                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                        modifier = Modifier
+                            .height(170.dp)
+                            .fillMaxWidth()
+                    ) {
+                        item {
+                            StatCard(
+                                icon = R.drawable.ic_student_gold,
+                                title = "Mahasiswa Aktif",
+                                count = if (isLoading && !isRefreshing) "..." else stats.totalStudents.toString()
+                            )
+                        }
+                        item {
+                            StatCard(
+                                icon = R.drawable.ic_subject_gold,
+                                title = "Mata Kuliah Aktif",
+                                count = if (isLoading && !isRefreshing) "..." else stats.totalSubjects.toString()
+                            )
+                        }
+                        item {
+                            StatCard(
+                                icon = R.drawable.ic_lecturer_gold,
+                                title = "Dosen Aktif",
+                                count = if (isLoading && !isRefreshing) "..." else stats.totalLecturers.toString()
+                            )
+                        }
+                    }
                 }
-                item {
-                    StatCard(
-                        icon = R.drawable.ic_subject_gold,
-                        title = "Mata Kuliah Aktif",
-                        count = if (isLoading) "..." else stats.totalSubjects.toString()
+
+                // Menu Navigasi
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(20.dp)
+                ) {
+                    Text(
+                        text = "Sistem Manajemen",
+                        style = MaterialTheme.typography.displayLarge,
+                        fontSize = 30.sp,
+                        color = UGNGreen,
+                        modifier = Modifier.padding(bottom = 20.dp)
                     )
-                }
-                item {
-                    StatCard(
-                        icon = R.drawable.ic_lecturer_gold,
-                        title = "Dosen Aktif",
-                        count = if (isLoading) "..." else stats.totalLecturers.toString()
+
+                    ManagementCard(
+                        icon = R.drawable.ic_student,
+                        title = "Manage Data Mahasiswa",
+                        subtitle = "Kelola data mahasiswa dalam sistem",
+                        onClick = onStudentClick
                     )
+
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                    ManagementCard(
+                        icon = R.drawable.ic_subject,
+                        title = "Manage Data Mata Kuliah",
+                        subtitle = "Kelola data mata kuliah dalam sistem",
+                        onClick = onSubjectClick
+                    )
+
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                    ManagementCard(
+                        icon = R.drawable.ic_lecturer,
+                        title = "Manage Data Dosen",
+                        subtitle = "Kelola data dosen dalam sistem",
+                        onClick = onLecturerClick
+                    )
+
+                    Spacer(modifier = Modifier.height(50.dp))
+
                 }
             }
-        }
-
-        // Navigation Section
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(BackgroundCream)
-                .navigationBarsPadding()
-                .padding(
-                    start = 20.dp,
-                    top = 20.dp,
-                    end = 20.dp,
-                )
-                .verticalScroll(rememberScrollState())
-        ) {
-            Text(
-                text = "Sistem Manajemen",
-                style = MaterialTheme.typography.displayLarge,
-                fontSize = 30.sp,
-                color = UGNGreen,
-                modifier = Modifier.padding(bottom = 20.dp)
-            )
-
-            // Student Card
-            ManagementCard(
-                icon = R.drawable.ic_student,
-                title = "Manage Data Mahasiswa",
-                subtitle = "Kelola data mahasiswa dalam sistem",
-                onClick = onStudentClick
-            )
-
-            Spacer(modifier = Modifier.height(20.dp))
-
-            // Subject Card
-            ManagementCard(
-                icon = R.drawable.ic_subject,
-                title = "Manage Data Mata Kuliah",
-                subtitle = "Kelola data mata kuliah dalam sistem",
-                onClick = onSubjectClick
-            )
-
-            Spacer(modifier = Modifier.height(20.dp))
-
-            // Lecturer Card
-            ManagementCard(
-                icon = R.drawable.ic_lecturer,
-                title = "Manage Data Dosen",
-                subtitle = "Kelola data dosen dalam sistem",
-                onClick = onLecturerClick
-            )
-
-            Spacer(modifier = Modifier.height(20.dp))
         }
     }
 }

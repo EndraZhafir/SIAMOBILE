@@ -428,7 +428,6 @@ fun StatsScreen(
                     )
                 }
             ) {
-
                 // Semua isi konten (kecuali topbar) dapat di-scroll
                 LazyColumn(
                     modifier = Modifier

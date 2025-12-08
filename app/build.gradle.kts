@@ -46,19 +46,19 @@ dependencies {
     implementation(libs.androidx.compose.foundation)
 
     // Retrofit (Untuk Networking)
-    implementation("com.squareup.retrofit2:retrofit:3.0.0")
+    implementation(libs.retrofit)
 
     // GSON Converter (Untuk ubah JSON -> Data Class Kotlin)
-    implementation("com.squareup.retrofit2:converter-gson:3.0.0")
+    implementation(libs.converter.gson)
 
     // OkHttp Logging (Opsional tapi WAJIB buat debugging, biar tau data yang dikirim/diterima)
-    implementation("com.squareup.okhttp3:logging-interceptor:5.3.2")
+    implementation(libs.logging.interceptor)
 
     // Coroutines (Untuk jalanin di background thread)
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
+    implementation(libs.kotlinx.coroutines.android)
 
     // ViewModel Compose (Biar gampang integrasi ke UI)
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.10.0")
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
