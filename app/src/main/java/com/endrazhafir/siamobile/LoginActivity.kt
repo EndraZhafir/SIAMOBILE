@@ -3,11 +3,15 @@ package com.endrazhafir.siamobile
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import com.endrazhafir.siamobile.ui.components.CustomToastHost
 import com.endrazhafir.siamobile.ui.screens.LoginScreen
 import com.endrazhafir.siamobile.ui.theme.SiaMobileTheme
 import com.endrazhafir.siamobile.ui.viewmodel.LoginViewModel
@@ -38,27 +42,28 @@ class LoginActivity : ComponentActivity() {
         )
         setContent {
             SiaMobileTheme {
-                // Observe state sukses
-                if (viewModel.isLoginSuccess.value) {
-                    // Pindah ke halaman Dashboard Admin
-                    startActivity(Intent(this, DashboardActivity::class.java))
-                    finish()
-                }
 
-                LoginScreen(
-                    // Kirim state loading/error ke UI kalau mau ditampilkan
-                    // errorMessage = viewModel.loginError.value,
-
-                    onLoginClick = { email, password ->
-                        // Handle login logic dengan memanggil fun login di viewModel
-                        viewModel.login(this@LoginActivity, email, password)
+                Box(modifier = Modifier.fillMaxSize()) {
+                    // Observe state sukses
+                    if (viewModel.isLoginSuccess.value) {
+                        // Pindah ke halaman Dashboard Admin
+                        startActivity(Intent(this@LoginActivity, DashboardActivity::class.java))
+                        finish()
                     }
-                )
 
-                // Tampilkan Toast error jika ada
-                if (viewModel.loginError.value.isNotEmpty()) {
-                    Toast.makeText(this, viewModel.loginError.value, Toast.LENGTH_SHORT).show()
-                    viewModel.loginError.value = ""
+                    LoginScreen(
+                        // Kirim state loading/error ke UI kalau mau ditampilkan
+                        // errorMessage = viewModel.loginError.value,
+
+                        onLoginClick = { email, password ->
+                            // Handle login logic dengan memanggil fun login di viewModel
+                            viewModel.login(this@LoginActivity, email, password)
+                        }
+                    )
+
+                    Box(modifier = Modifier.align(Alignment.TopCenter)) {
+                        CustomToastHost()
+                    }
                 }
             }
         }

@@ -1,12 +1,13 @@
 package com.endrazhafir.siamobile.ui.viewmodel
 
 import android.content.Context
-import android.util.Log.e
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.endrazhafir.siamobile.data.LoginRequest
 import com.endrazhafir.siamobile.data.remote.RetrofitClient
+import com.endrazhafir.siamobile.ui.components.ToastManager
+import com.endrazhafir.siamobile.ui.components.ToastType
 import com.endrazhafir.siamobile.utils.SessionManager
 import kotlinx.coroutines.launch
 
@@ -28,12 +29,14 @@ class LoginViewModel : ViewModel() {
                 if (response.isSuccessful) {
                     val apiResponse = response.body()
                     if (apiResponse != null && apiResponse.status == "success") {
+                        // Sukses
+                        ToastManager.show("Login berhasil! Selamat datang.", ToastType.SUCCESS)
                         // Cek roles
                         val roles = apiResponse.data.user.roles
 
                         // Cek apakah punya role 'manager' atau 'admin'
                         // Sesuaikan string 'manager' dengan yang ada di database Laravel kamu
-                        if (roles.contains("manager") || roles.contains("admin")) {
+                        if (roles.contains("admin") ||  roles.contains("manager")) {
 
                             // Ambil Token & Nama
                             val token = apiResponse.data.accessToken
@@ -46,20 +49,21 @@ class LoginViewModel : ViewModel() {
                             // Trigger navigasi
                             isLoginSuccess.value = true
                         } else {
-                            // Jika login sukses tapi role bukan manager
-                            loginError.value = "Akses Ditolak: Anda bukan Admin/Manager!"
+                            ToastManager.show("Akses Ditolak: Anda bukan Admin/Manager!", ToastType.ERROR)
                         }
 
                     } else {
-                        loginError.value = "Login Gagal: ${apiResponse?.message}"
+                        // Gagal terjadi kesalahan
+                        val msg = apiResponse?.message ?: "Terjadi kesalahan"
+                        ToastManager.show("Login Gagal: $msg", ToastType.ERROR)
                     }
 
                 } else {
-                    loginError.value = "Email atau Password Salah"
+                    ToastManager.show("Email atau Password salah.", ToastType.ERROR)
                 }
 
             } catch (e: Exception) {
-                loginError.value = "Terjadi kesalahan koneksi"
+                ToastManager.show("Terjadi kesalahan koneksi.", ToastType.ERROR)
                 e.printStackTrace()
 
             } finally {

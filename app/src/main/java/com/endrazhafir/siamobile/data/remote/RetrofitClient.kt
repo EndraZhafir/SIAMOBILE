@@ -7,11 +7,14 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
 object RetrofitClient {
-    // Sesuaikan Port Laravel.
-    // Kalo 'php artisan serve', biasanya port 8000 -> http://10.0.2.2:8000/api/
-    // Kalo untuk online https://api.trisuladana.com/api/
-    // Kalo pake HP fisik/eksternal, ganti ke IP Address Laptop (misal 192.168.1.5)
-    // Jalankan Laravel dengan: php artisan serve --host 0.0.0.0 --port 8000.
+
+    /**
+     * Sesuaikan Port Laravel.
+     * Kalo 'php artisan serve', biasanya port 8000 -> http://10.0.2.2:8000/api/
+     * Kalo untuk online https://api.trisuladana.com/api/
+     * Kalo pake HP fisik/eksternal, ganti ke IP Address Laptop (misal 192.168.1.5)
+     * Jalankan Laravel dengan: php artisan serve --host 0.0.0.0 --port 8000.
+     */
     private const val BASE_URL = "https://api.trisuladana.com/api/"
 
     val instance: ApiService by lazy {

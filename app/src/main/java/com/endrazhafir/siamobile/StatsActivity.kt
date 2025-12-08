@@ -6,6 +6,11 @@ import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import com.endrazhafir.siamobile.ui.components.CustomToastHost
 import com.endrazhafir.siamobile.ui.screens.StatsScreen
 import com.endrazhafir.siamobile.ui.theme.SiaMobileTheme
 class StatsActivity : ComponentActivity() {
@@ -26,10 +31,16 @@ class StatsActivity : ComponentActivity() {
         )
         setContent {
             SiaMobileTheme {
-                StatsScreen(
-                    type = screenType,
-                    onBackClick = { finish() }
-                )
+                Box(modifier = Modifier.fillMaxSize()) {
+                    StatsScreen(
+                        type = screenType,
+                        onBackClick = { finish() }
+                    )
+
+                    Box(modifier = Modifier.align(Alignment.TopCenter)) {
+                        CustomToastHost()
+                    }
+                }
             }
         }
     }

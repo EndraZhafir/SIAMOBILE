@@ -12,6 +12,8 @@ import com.endrazhafir.siamobile.data.Mahasiswa
 import com.endrazhafir.siamobile.data.MataKuliah
 import com.endrazhafir.siamobile.data.Program
 import com.endrazhafir.siamobile.data.remote.RetrofitClient
+import com.endrazhafir.siamobile.ui.components.ToastManager
+import com.endrazhafir.siamobile.ui.components.ToastType
 import com.endrazhafir.siamobile.utils.SessionManager
 import kotlinx.coroutines.launch
 
@@ -38,15 +40,15 @@ class StatsViewModel : ViewModel() {
             try {
                 val response = RetrofitClient.instance.addMahasiswa(token, request)
                 if (response.isSuccessful) {
-                    android.widget.Toast.makeText(context, "Mahasiswa berhasil ditambahkan", android.widget.Toast.LENGTH_SHORT).show()
+                    ToastManager.show("Mahasiswa berhasil ditambahkan.", ToastType.SUCCESS)
                     getMahasiswa(context)
                 } else {
                     val errorBody = response.errorBody()?.string()
-                    android.widget.Toast.makeText(context, "Gagal menambahkan mahasiswa: ${response.code()} - $errorBody", android.widget.Toast.LENGTH_SHORT).show()
+                    ToastManager.show("Gagal menambahkan: ${response.code()} - $errorBody", ToastType.ERROR)
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                android.widget.Toast.makeText(context, "Terjadi kesalahan: ${e.message}", android.widget.Toast.LENGTH_SHORT).show()
+                ToastManager.show("Terjadi kesalahan: ${e.message}", ToastType.ERROR)
             }
         }
     }
@@ -66,10 +68,12 @@ class StatsViewModel : ViewModel() {
 
                     mahasiswaList.clear()
                     mahasiswaList.addAll(mappedList)
+                } else {
+                    ToastManager.show("Gagal memuat data: ${response.code()}", ToastType.ERROR)
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                android.widget.Toast.makeText(context, "Terjadi kesalahan: ${e.message}", android.widget.Toast.LENGTH_SHORT).show()
+                ToastManager.show("Terjadi kesalahan: ${e.message}", ToastType.ERROR)
             } finally {
                 isLoading.value = false
             }
@@ -84,15 +88,15 @@ class StatsViewModel : ViewModel() {
                 val response = RetrofitClient.instance.toggleStatusUser(token, id)
 
                 if (response.isSuccessful) {
-                    android.widget.Toast.makeText(context, "Status berhasil diubah!", android.widget.Toast.LENGTH_SHORT).show()
+                    ToastManager.show("Status berhasil diubah.", ToastType.SUCCESS)
                     getMahasiswa(context)
                 } else {
                     val errorBody = response.errorBody()?.string()
-                    android.widget.Toast.makeText(context, "Gagal: ${response.code()} - $errorBody", android.widget.Toast.LENGTH_SHORT).show()
+                    ToastManager.show("Gagal: ${response.code()} - $errorBody", ToastType.ERROR)
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                android.widget.Toast.makeText(context, "Terjadi kesalahan: ${e.message}", android.widget.Toast.LENGTH_SHORT).show()
+                ToastManager.show("Terjadi kesalahan: ${e.message}", ToastType.ERROR)
             }
         }
     }
@@ -104,15 +108,15 @@ class StatsViewModel : ViewModel() {
             try {
                 val response = RetrofitClient.instance.addMataKuliah(token, matkul)
                 if (response.isSuccessful) {
-                    android.widget.Toast.makeText(context, "Mata kuliah berhasil ditambahkan", android.widget.Toast.LENGTH_SHORT).show()
+                    ToastManager.show("Mata kuliah berhasil ditambahkan.", ToastType.SUCCESS)
                     getMataKuliah(context)
                 } else {
                     val errorBody = response.errorBody()?.string()
-                    android.widget.Toast.makeText(context, "Gagal menambahkan mata kuliah: ${response.code()} - $errorBody", android.widget.Toast.LENGTH_SHORT).show()
+                    ToastManager.show("Gagal menambahkan mata kuliah: ${response.code()} - $errorBody", ToastType.ERROR)
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                android.widget.Toast.makeText(context, "Terjadi kesalahan: ${e.message}", android.widget.Toast.LENGTH_SHORT).show()
+                ToastManager.show("Terjadi kesalahan: ${e.message}", ToastType.ERROR)
             }
         }
     }
@@ -133,11 +137,11 @@ class StatsViewModel : ViewModel() {
                         println("Sukses Fetch Data: ${apiResponse.data.size} items")
                     }
                 } else {
-                    println("Error API: ${response.code()} - ${response.errorBody()?.string()}")
+                    ToastManager.show("Gagal memuat data: ${response.code()}", ToastType.ERROR)
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                android.widget.Toast.makeText(context, "Terjadi kesalahan: ${e.message}", android.widget.Toast.LENGTH_SHORT).show()
+                ToastManager.show("Terjadi kesalahan: ${e.message}", ToastType.ERROR)
             } finally {
                 isLoading.value = false
             }
@@ -151,15 +155,15 @@ class StatsViewModel : ViewModel() {
             try {
                 val response = RetrofitClient.instance.updateMataKuliah(token, id, matkul)
                 if (response.isSuccessful) {
-                    android.widget.Toast.makeText(context, "Mata kuliah berhasil diupdate", android.widget.Toast.LENGTH_SHORT).show()
+                    ToastManager.show("Mata kuliah berhasil diupdate.", ToastType.SUCCESS)
                     getMataKuliah(context)
                 } else {
                     val errorBody = response.errorBody()?.string()
-                    android.widget.Toast.makeText(context, "Gagal mengupdate mata kuliah: ${response.code()} - $errorBody", android.widget.Toast.LENGTH_SHORT).show()
+                    ToastManager.show("Gagal mengupdate mata kuliah: ${response.code()} - $errorBody", ToastType.ERROR)
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                android.widget.Toast.makeText(context, "Terjadi kesalahan: ${e.message}", android.widget.Toast.LENGTH_SHORT).show()
+                ToastManager.show("Terjadi kesalahan: ${e.message}", ToastType.ERROR)
             }
         }
     }
@@ -171,14 +175,14 @@ class StatsViewModel : ViewModel() {
             try {
                 val response = RetrofitClient.instance.deleteMataKuliah(token, id)
                 if (response.isSuccessful) {
-                    android.widget.Toast.makeText(context, "Mata kuliah berhasil dihapus", android.widget.Toast.LENGTH_SHORT).show()
+                    ToastManager.show("Mata kuliah berhasil dihapus.", ToastType.SUCCESS)
                     getMataKuliah(context)
                 } else {
-                    android.widget.Toast.makeText(context, "Gagal menghapus mata kuliah: ${response.code()}. Mata Kuliah sedang digunakan.", android.widget.Toast.LENGTH_SHORT).show()
+                    ToastManager.show("Gagal menghapus mata kuliah: ${response.code()}. Mata Kuliah sedang digunakan.", ToastType.ERROR)
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                android.widget.Toast.makeText(context, "Terjadi kesalahan: ${e.message}", android.widget.Toast.LENGTH_SHORT).show()
+                ToastManager.show("Terjadi kesalahan: ${e.message}", ToastType.ERROR)
             }
         }
     }
@@ -190,15 +194,15 @@ class StatsViewModel : ViewModel() {
             try {
                 val response = RetrofitClient.instance.addDosen(token, request)
                 if (response.isSuccessful) {
-                    android.widget.Toast.makeText(context, "Dosen berhasil ditambahkan", android.widget.Toast.LENGTH_SHORT).show()
+                    ToastManager.show("Dosen berhasil ditambahkan.", ToastType.SUCCESS)
                     getDosen(context)
                 } else {
                     val errorBody = response.errorBody()?.string()
-                    android.widget.Toast.makeText(context, "Gagal menambahkan dosen: ${response.code()} - $errorBody", android.widget.Toast.LENGTH_SHORT).show()
+                    ToastManager.show("Gagal menambahkan dosen: ${response.code()} - $errorBody", ToastType.ERROR)
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                android.widget.Toast.makeText(context, "Terjadi kesalahan: ${e.message}", android.widget.Toast.LENGTH_SHORT).show()
+                ToastManager.show("Terjadi kesalahan: ${e.message}", ToastType.ERROR)
             }
         }
     }
@@ -218,10 +222,12 @@ class StatsViewModel : ViewModel() {
 
                     dosenList.clear()
                     dosenList.addAll(mappedList)
+                } else {
+                    ToastManager.show("Gagal memuat data: ${response.code()}", ToastType.ERROR)
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                android.widget.Toast.makeText(context, "Terjadi kesalahan: ${e.message}", android.widget.Toast.LENGTH_SHORT).show()
+                ToastManager.show("Terjadi kesalahan: ${e.message}", ToastType.ERROR)
             } finally {
                 isLoading.value = false
             }
@@ -236,15 +242,15 @@ class StatsViewModel : ViewModel() {
                 val response = RetrofitClient.instance.toggleStatusUser(token, id)
 
                 if (response.isSuccessful) {
-                    android.widget.Toast.makeText(context, "Status berhasil diubah!", android.widget.Toast.LENGTH_SHORT).show()
+                    ToastManager.show("Status berhasil diubah.", ToastType.SUCCESS)
                     getDosen(context)
                 } else {
                     val errorBody = response.errorBody()?.string()
-                    android.widget.Toast.makeText(context, "Gagal: ${response.code()} - $errorBody", android.widget.Toast.LENGTH_SHORT).show()
+                    ToastManager.show("Gagal: ${response.code()} - $errorBody", ToastType.ERROR)
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                android.widget.Toast.makeText(context, "Terjadi kesalahan: ${e.message}", android.widget.Toast.LENGTH_SHORT).show()
+                ToastManager.show("Terjadi kesalahan: ${e.message}", ToastType.ERROR)
             }
         }
     }
@@ -261,7 +267,7 @@ class StatsViewModel : ViewModel() {
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                android.widget.Toast.makeText(context, "Terjadi kesalahan: ${e.message}", android.widget.Toast.LENGTH_SHORT).show()
+                ToastManager.show("Terjadi kesalahan: ${e.message}", ToastType.ERROR)
             }
         }
     }

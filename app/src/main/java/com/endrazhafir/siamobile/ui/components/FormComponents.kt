@@ -300,12 +300,22 @@ fun AddMahasiswaContent(
 
         Button(
             onClick = {
-                val idProgram = selectedProgramId ?: 1
-
-                // Validasi password sama ato ngga
-                if (password != passwordConfirmation) {
-                    // Logic utk error handling bisa ditambah disini ntah kapan
+                if (username.isBlank() || nama.isBlank() || nim.isBlank() || email.isBlank() || password.isBlank()) {
+                    ToastManager.show("Mohon lengkapi semua data wajib!", ToastType.ERROR)
+                    return@Button
                 }
+
+                if (password != passwordConfirmation) {
+                    ToastManager.show("Konfirmasi password tidak cocok!", ToastType.ERROR)
+                    return@Button
+                }
+
+                if (selectedProgramId == null) {
+                    ToastManager.show("Silakan pilih Program Studi!", ToastType.ERROR)
+                    return@Button
+                }
+
+                val idProgram = selectedProgramId!!
 
                 val request = AddMahasiswaRequest(
                     username = username,
@@ -387,7 +397,17 @@ fun AddMataKuliahContent(
 
         Button(
             onClick = {
-                val sksInt = sks.toIntOrNull() ?: 0
+                if (nama.isBlank() || kode.isBlank() || sks.isBlank()) {
+                    ToastManager.show("Data Mata Kuliah tidak boleh kosong!", ToastType.ERROR)
+                    return@Button
+                }
+
+                if (sks.toIntOrNull() == null) {
+                    ToastManager.show("SKS harus berupa angka!", ToastType.ERROR)
+                    return@Button
+                }
+
+                val sksInt = sks.toInt() // Aman karena sudah dicek
                 val newMatkul = MataKuliah(0, nama, kode, sksInt)
 
                 onSave(newMatkul)
@@ -503,12 +523,22 @@ fun AddDosenContent(
 
         Button(
             onClick = {
-                val idProgram = selectedProgramId ?: 1
-
-                // Validasi password sama ato ngga
-                if (password != passwordConfirmation) {
-                    // Logic utk error handling bisa ditambah disini ntah kapan
+                if (username.isBlank() || nama.isBlank() || email.isBlank() || password.isBlank()) {
+                    ToastManager.show("Mohon lengkapi semua data dosen!", ToastType.ERROR)
+                    return@Button
                 }
+
+                if (password != passwordConfirmation) {
+                    ToastManager.show("Konfirmasi password tidak cocok!", ToastType.ERROR)
+                    return@Button
+                }
+
+                if (selectedProgramId == null) {
+                    ToastManager.show("Silakan pilih Program Studi!", ToastType.ERROR)
+                    return@Button
+                }
+
+                val idProgram = selectedProgramId!!
 
                 val request = AddDosenRequest(
                     username = username,
