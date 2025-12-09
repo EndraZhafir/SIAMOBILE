@@ -48,7 +48,12 @@ class StatsViewModel : ViewModel() {
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                ToastManager.show("Terjadi kesalahan: ${e.message}", ToastType.ERROR)
+                val msg = if (e is com.google.gson.stream.MalformedJsonException) {
+                    "Gagal: Username/Email/NIM mungkin sudah terdaftar."
+                } else {
+                    "Terjadi kesalahan: ${e.localizedMessage}"
+                }
+                ToastManager.show(msg, ToastType.ERROR)
             }
         }
     }
@@ -202,7 +207,12 @@ class StatsViewModel : ViewModel() {
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                ToastManager.show("Terjadi kesalahan: ${e.message}", ToastType.ERROR)
+                val msg = if (e is com.google.gson.stream.MalformedJsonException) {
+                    "Gagal: Username atau Email mungkin sudah terdaftar."
+                } else {
+                    "Terjadi kesalahan: ${e.localizedMessage}"
+                }
+                ToastManager.show(msg, ToastType.ERROR)
             }
         }
     }
