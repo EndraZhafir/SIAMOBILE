@@ -19,12 +19,12 @@ object RetrofitClient {
 
     val instance: ApiService by lazy {
         val logging = HttpLoggingInterceptor().apply {
-            level = HttpLoggingInterceptor.Level.BODY // Biar kelihatan request/response di Logcat
+            level = HttpLoggingInterceptor.Level.BODY
         }
 
         val client = OkHttpClient.Builder()
             .addInterceptor(logging)
-            .connectTimeout(30, TimeUnit.SECONDS) // Tambahin timeout biar gak gampang RTO
+            .connectTimeout(30, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)
             .build()
 

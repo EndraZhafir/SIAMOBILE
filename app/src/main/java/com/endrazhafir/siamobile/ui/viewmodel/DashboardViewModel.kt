@@ -28,7 +28,6 @@ class DashboardViewModel : ViewModel() {
                 val response = RetrofitClient.instance.getDashboardStatistics(token)
 
                 if (response.isSuccessful && response.body()?.status == "success") {
-                    // Update state dengan data dari API
                     response.body()?.data?.let {
                         statistics.value = it
                     }

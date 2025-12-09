@@ -65,7 +65,7 @@ interface ApiService {
         @Body request: AddDosenRequest
     ): Response<ApiResponse<Any>>
 
-    // MAHASISWA & DOSEN
+    // --- MAHASISWA & DOSEN ---
     // GET /api/manager/users-by-role?role=mahasiswa
     // GET /api/manager/users-by-role?role=dosen
     @GET("manager/users-by-role")

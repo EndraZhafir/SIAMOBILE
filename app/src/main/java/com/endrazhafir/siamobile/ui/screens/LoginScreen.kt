@@ -54,7 +54,7 @@ fun LoginScreen(
                 .statusBarsPadding(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // fungsi Spacer untuk push logo ke tengah secara vertical
+
             Spacer(modifier = Modifier.weight(1f))
 
             // Logo

@@ -29,31 +29,26 @@ class LoginViewModel : ViewModel() {
                 if (response.isSuccessful) {
                     val apiResponse = response.body()
                     if (apiResponse != null && apiResponse.status == "success") {
-                        // Sukses
                         ToastManager.show("Login berhasil! Selamat datang.", ToastType.SUCCESS)
-                        // Cek roles
+
                         val roles = apiResponse.data.user.roles
 
-                        // Cek apakah punya role 'manager' atau 'admin'
-                        // Sesuaikan string 'manager' dengan yang ada di database Laravel kamu
+                        // Cek role 'admin' atau 'manager'
                         if (roles.contains("admin") ||  roles.contains("manager")) {
 
-                            // Ambil Token & Nama
                             val token = apiResponse.data.accessToken
                             val name = apiResponse.data.user.name
 
-                            // Simpan ke SessionManager
+                            // Simpan token ke SessionManager
                             val sessionManager = SessionManager(context)
                             sessionManager.saveAuthToken("Bearer $token", name)
 
-                            // Trigger navigasi
                             isLoginSuccess.value = true
                         } else {
                             ToastManager.show("Akses Ditolak: Anda bukan Admin/Manager!", ToastType.ERROR)
                         }
 
                     } else {
-                        // Gagal terjadi kesalahan
                         val msg = apiResponse?.message ?: "Terjadi kesalahan"
                         ToastManager.show("Login Gagal: $msg", ToastType.ERROR)
                     }

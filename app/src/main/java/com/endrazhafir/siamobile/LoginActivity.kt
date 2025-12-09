@@ -44,19 +44,14 @@ class LoginActivity : ComponentActivity() {
             SiaMobileTheme {
 
                 Box(modifier = Modifier.fillMaxSize()) {
-                    // Observe state sukses
                     if (viewModel.isLoginSuccess.value) {
-                        // Pindah ke halaman Dashboard Admin
                         startActivity(Intent(this@LoginActivity, DashboardActivity::class.java))
                         finish()
                     }
 
                     LoginScreen(
-                        // Kirim state loading/error ke UI kalau mau ditampilkan
-                        // errorMessage = viewModel.loginError.value,
 
                         onLoginClick = { email, password ->
-                            // Handle login logic dengan memanggil fun login di viewModel
                             viewModel.login(this@LoginActivity, email, password)
                         }
                     )

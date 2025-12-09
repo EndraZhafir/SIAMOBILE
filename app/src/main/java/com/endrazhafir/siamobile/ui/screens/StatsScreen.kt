@@ -69,7 +69,7 @@ fun StatsScreen(
 ) {
     val context = LocalContext.current
 
-    // TRIGGER FETCH API (memanggil viewModel)
+    // Trigger untuk fetch API (memanggil viewModel)
     LaunchedEffect(Unit) {
         if (type == "MAHASISWA") {
             viewModel.getMahasiswa(context)
@@ -83,7 +83,6 @@ fun StatsScreen(
         viewModel.getPrograms(context)
     }
 
-    // Data dari ViewModel
     val mahasiswaList = viewModel.mahasiswaList
     val mataKuliahList = viewModel.mataKuliahList
     val dosenList = viewModel.dosenList
@@ -98,7 +97,6 @@ fun StatsScreen(
 
     // Data target (nama user, status sekarang)
     var selectedStatusTarget by remember { mutableStateOf<Triple<Int, String, Boolean>?>(null) }
-    // Triple: (ID, Nama/Username, StatusSaatIni) -> ID dipake buat logic update nanti
 
     // State untuk edit matkul
     var showEditSheet by remember { mutableStateOf(false) }
@@ -334,7 +332,7 @@ fun StatsScreen(
         }
     }
 
-    // Pop Up dialog konfirmasi
+    // --- Pop Up Confirmation Dialog ---
     // Pop up matkul
     if(showDeleteMatkulDialog && selectedMatkulToDelete != null) {
         ConfirmationDialog(
@@ -358,7 +356,6 @@ fun StatsScreen(
     // Pop up mhs/dsn
     if(showStatusDialog && selectedStatusTarget != null) {
         val (id, name, currentStatusBoolean) = selectedStatusTarget!!
-
         val actionWord = if (currentStatusBoolean) "non-aktifkan" else "aktifkan"
 
         ConfirmationDialog(
@@ -394,7 +391,6 @@ fun StatsScreen(
 
     val onRefresh: () -> Unit = {
         isRefreshing = true
-        // Panggil ulang API
         when (type) {
             "MAHASISWA" -> viewModel.getMahasiswa(context)
             "MATAKULIAH" -> viewModel.getMataKuliah(context)
@@ -1100,8 +1096,7 @@ fun MahasiswaTableRow(
                     modifier = Modifier.weight(1f),
                     horizontalArrangement = Arrangement.Center
                 ) {
-                    // Logic warna
-                    // cek status mahasiswa
+
                     val buttonColor = if (mahasiswa.isActive) UGNRed else UGNGreen
 
                     // Active/Deactivate Button
@@ -1358,23 +1353,22 @@ fun DosenTableRow(
                     modifier = Modifier.weight(1f),
                     horizontalArrangement = Arrangement.Center
                 ) {
-                    // Logic warna
-                    // cek status dosen
+
                     val buttonColor = if (dosen.isActive) UGNRed else UGNGreen
 
                     // Active/Deactivate Button
                     Box(
                         modifier = Modifier
-                            .size(32.dp) // Ukuran Luar Tombol
-                            .clip(RoundedCornerShape(8.dp)) // INI KUNCINYA: Bentuk Rounded Box
-                            .background(buttonColor) // Warna Background
-                            .clickable { onDeleteClick() }, // Pindahkan aksi klik ke sini
+                            .size(32.dp)
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(buttonColor)
+                            .clickable { onDeleteClick() },
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_power),
                             contentDescription = "Status Action",
-                            modifier = Modifier.size(18.dp), // Ukuran Icon (proporsional)
+                            modifier = Modifier.size(18.dp),
                             tint = Color.White
                         )
                     }

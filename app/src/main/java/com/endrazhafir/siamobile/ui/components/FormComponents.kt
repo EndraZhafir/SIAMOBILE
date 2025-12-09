@@ -407,7 +407,7 @@ fun AddMataKuliahContent(
                     return@Button
                 }
 
-                val sksInt = sks.toInt() // Aman karena sudah dicek
+                val sksInt = sks.toInt()
                 val newMatkul = MataKuliah(0, nama, kode, sksInt)
 
                 onSave(newMatkul)

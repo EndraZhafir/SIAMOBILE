@@ -17,7 +17,6 @@ class StatsActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // membaca "pesan" dari intent. diberi value default "MATAKULIAH" klo g ada "pesan"
         val screenType = intent.getStringExtra("SCREEN_TYPE") ?: "MATAKULIAH"
 
         enableEdgeToEdge(

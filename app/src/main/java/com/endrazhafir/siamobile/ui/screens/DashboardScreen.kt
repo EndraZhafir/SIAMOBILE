@@ -43,7 +43,7 @@ fun DashboardScreen(
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
 
-    // Login ON_RESUME (misal balik dari StatsActivity)
+    // Logic ON_RESUME (misal balik dari StatsActivity)
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME) {
@@ -148,7 +148,7 @@ fun DashboardScreen(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(BackgroundCream) // Default background bawah cream
+                    .background(BackgroundCream)
                     .verticalScroll(rememberScrollState())
             ) {
                 // Profile & Stats
