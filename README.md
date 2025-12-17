@@ -19,11 +19,11 @@ Proyek ini dikembangkan sebagai **Tugas Akhir** mata kuliah **Praktikum Pemrogra
 ## 📱 Screenshots UI Aplikasi
 
 <p align="center">
-  <img width="150" alt="screenshot_login" src="https://github.com/user-attachments/assets/5f8bdbe7-1b7c-48f9-ac8d-97a1c91187cb" />
-  <img width="150" alt="screenshot_dashboard" src="https://github.com/user-attachments/assets/41150242-1e06-4327-be00-d0571ab4602e" />
-  <img width="150" alt="screenshot_stats" src="https://github.com/user-attachments/assets/1cfd1f20-03f1-4878-9f3c-89d12d46a829" />
-  <img width="150" alt="screenshot_form" src="https://github.com/user-attachments/assets/f675c53e-2ae0-4e20-a786-3d27b1eb154e" />
-  <img width="150" alt="screenshot_toast" src="https://github.com/user-attachments/assets/88021d4b-5deb-453d-9069-f0a7cb481060" />
+  <img width="150" alt="screenshot_login" src="https://github.com/user-attachments/assets/d54140fd-9c90-4bfd-a2d2-310b08f3b0ac" />
+  <img width="150" alt="screenshot_dashboard" src="https://github.com/user-attachments/assets/7e4928d9-5a81-4a25-af40-87eb760e27c2" />
+  <img width="150" alt="screenshot_stats" src="https://github.com/user-attachments/assets/cdb02ed3-ea19-4700-8c0e-1be1010f9d4c" />
+  <img width="150" alt="screenshot_form" src="https://github.com/user-attachments/assets/9bf04d81-a6b0-4ff5-a512-6d769fd0ebce" />
+  <img width="150" alt="screenshot_toast" src="https://github.com/user-attachments/assets/e1e43597-0cd9-4528-a67c-1fa2383db4fa" />
 </p>
 
 **Keterangan Tampilan:**
